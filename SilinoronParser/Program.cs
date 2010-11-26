@@ -28,12 +28,14 @@ namespace SilinoronParser
             string file;
             string loader;
             string nodump;
+            string nohex;
 
             try
             {
                 file = CmdLine.GetValue("-file");
                 loader = CmdLine.GetValue("-loader");
                 nodump = CmdLine.GetValue("-nodump");
+                nohex = CmdLine.GetValue("-nohex");
             }
             catch (IndexOutOfRangeException)
             {
@@ -53,7 +55,7 @@ namespace SilinoronParser
                 if (packets.Count() > 0)
                 {
                     var fullPath = Utilities.GetPathFromFullPath(file);
-                    Handler.InitializeLogFile(Path.Combine(fullPath, file + ".txt"), nodump);
+                    Handler.InitializeLogFile(Path.Combine(fullPath, file + ".txt"), nodump, nohex);
 
                     foreach (var packet in packets)
                         Handler.Parse(packet);
@@ -78,10 +80,11 @@ namespace SilinoronParser
                 Console.WriteLine(error + n);
 
             var usage = "Usage: SilinoronParser -file <input file> -loader <loader type> " +
-                "[-nodump <boolean>]" + n + n +
+                "[-nodump <boolean>] [-nohex <boolean>]" + n + n +
                 "-file\t\tThe file to read packets from." + n +
                 "-loader\t\tThe loader to use (zor4xx/tiawps)." + n +
-                "-nodump\t\tSet to True to disable file logging.";
+                "-nodump\t\tSet to True to disable file logging." + n +
+                "-nohex\t\tSet to True to not print out hex dumps.";
 
             Console.WriteLine(usage);
         }

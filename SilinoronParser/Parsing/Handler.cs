@@ -54,11 +54,13 @@ namespace SilinoronParser.Parsing
             }
         }
 
-        public static void InitializeLogFile(string file, string nodump)
+        public static void InitializeLogFile(string file, string nodump, string nohex)
         {
             _noDump = nodump.Equals(bool.TrueString, StringComparison.InvariantCultureIgnoreCase);
             if (_noDump)
                 return;
+
+            _noHex = nohex.Equals(bool.TrueString, StringComparison.InvariantCultureIgnoreCase);
 
             File.Delete(file);
             _file = new StreamWriter(file, true);
@@ -66,6 +68,8 @@ namespace SilinoronParser.Parsing
         }
 
         private static bool _noDump;
+
+        private static bool _noHex;
 
         private static StreamWriter _file;
 
@@ -89,27 +93,21 @@ namespace SilinoronParser.Parsing
             var time = packet.GetTime();
             var direction = packet.GetDirection();
             var length = packet.GetLength();
-
-            Console.ForegroundColor = ConsoleColor.Red;
-
-            Console.WriteLine("{0}: {1} (0x{2}) Length: {3} Time: {4}", (direction == 0) ? "Client->Server" : "Server->Client",
-                opcode, ((int)opcode).ToString("X4"), length, time);
-
-            Console.ForegroundColor = ConsoleColor.White;
-
-#if DEBUG
             bool handlerFound = false;
-#endif
 
             if (Handlers.ContainsKey(offset))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+
+                Console.WriteLine("{0}: {1} (0x{2}) Length: {3} Time: {4}", (direction == 0) ? "Client->Server" : "Server->Client",
+                    opcode, ((int)opcode).ToString("X4"), length, time);
+
+                Console.ForegroundColor = ConsoleColor.White;
                 var handler = Handlers[offset];
 
                 try
                 {
-#if DEBUG
                     handlerFound = true;
-#endif
                     handler(packet);
                 }
                 catch (Exception ex)
@@ -119,8 +117,16 @@ namespace SilinoronParser.Parsing
                     Console.WriteLine(ex.StackTrace);
                 }
             }
-            else
+            else if (!_noHex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+
+                Console.WriteLine("{0}: {1} (0x{2}) Length: {3} Time: {4}", (direction == 0) ? "Client->Server" : "Server->Client",
+                    opcode, ((int)opcode).ToString("X4"), length, time);
+
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(Utilities.DumpPacketAsHex(packet));
+            }
 
 #if DEBUG
             if (handlerFound && packet.GetPosition() < packet.GetLength())
@@ -137,7 +143,8 @@ namespace SilinoronParser.Parsing
 #endif
 
             Console.ResetColor();
-            Console.WriteLine();
+            if (handlerFound || !_noHex)
+                Console.WriteLine();
         }
     }
 }
