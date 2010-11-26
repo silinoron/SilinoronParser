@@ -27,14 +27,12 @@ namespace SilinoronParser
 
             string file;
             string loader;
-            string filters;
             string nodump;
 
             try
             {
                 file = CmdLine.GetValue("-file");
                 loader = CmdLine.GetValue("-loader");
-                filters = CmdLine.GetValue("-filters");
                 nodump = CmdLine.GetValue("-nodump");
             }
             catch (IndexOutOfRangeException)
@@ -57,25 +55,8 @@ namespace SilinoronParser
                     var fullPath = Utilities.GetPathFromFullPath(file);
                     Handler.InitializeLogFile(Path.Combine(fullPath, file + ".txt"), nodump);
 
-                    var appliedFilters = filters.Split(',');
-
                     foreach (var packet in packets)
-                    {
-                        var opcode = packet.GetOpcode().ToString();
-                        if (!string.IsNullOrEmpty(filters))
-                        {
-                            foreach (var opc in appliedFilters)
-                            {
-                                if (!opcode.Contains(opc))
-                                    continue;
-
-                                Handler.Parse(packet);
-                                break;
-                            }
-                        }
-                        else
-                            Handler.Parse(packet);
-                    }
+                        Handler.Parse(packet);
                     Handler.WriteToFile();
                 }
             }
@@ -97,10 +78,9 @@ namespace SilinoronParser
                 Console.WriteLine(error + n);
 
             var usage = "Usage: SilinoronParser -file <input file> -loader <loader type> " +
-                "[-filters opcode1,opcode2,...] [-sql <SQL format>] [-nodump <boolean>]" + n + n +
+                "[-nodump <boolean>]" + n + n +
                 "-file\t\tThe file to read packets from." + n +
                 "-loader\t\tThe loader to use (zor4xx/tiawps)." + n +
-                "-filters\tComma-separated list of opcodes to parse." + n +
                 "-nodump\t\tSet to True to disable file logging.";
 
             Console.WriteLine(usage);
