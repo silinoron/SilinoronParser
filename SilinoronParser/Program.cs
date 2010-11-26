@@ -99,7 +99,7 @@ namespace SilinoronParser
             var usage = "Usage: SilinoronParser -file <input file> -loader <loader type> " +
                 "[-filters opcode1,opcode2,...] [-sql <SQL format>] [-nodump <boolean>]" + n + n +
                 "-file\t\tThe file to read packets from." + n +
-                "-loader\t\tThe loader to use (zor4xx)." + n +
+                "-loader\t\tThe loader to use (zor4xx/tiawps)." + n +
                 "-filters\tComma-separated list of opcodes to parse." + n +
                 "-nodump\t\tSet to True to disable file logging.";
 
