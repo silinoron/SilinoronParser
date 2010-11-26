@@ -490,7 +490,7 @@ namespace SilinoronParser.Parsing.Parsers
             HandleUpdateObject(pkt);
         } */
 
-        /* [Parser(Index.HandleDestroyObjectIndex)]
+        [Parser(Index.HandleDestroyObjectIndex)]
         public static void HandleDestroyObject(Packet packet)
         {
             Console.WriteLine("Destroy Object");
@@ -499,6 +499,6 @@ namespace SilinoronParser.Parsing.Parsers
 
             var anim = packet.ReadBoolean();
             Console.WriteLine("Despawn Animation: " + anim);
-        } */
+        }
     }
 }
