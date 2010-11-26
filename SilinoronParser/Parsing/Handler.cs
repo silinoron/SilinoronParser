@@ -97,14 +97,19 @@ namespace SilinoronParser.Parsing
 
             Console.ForegroundColor = ConsoleColor.White;
 
-            var handlerFound = false;
+#if DEBUG
+            bool handlerFound = false;
+#endif
+
             if (Handlers.ContainsKey(offset))
             {
                 var handler = Handlers[offset];
 
                 try
                 {
+#if DEBUG
                     handlerFound = true;
+#endif
                     handler(packet);
                 }
                 catch (Exception ex)
