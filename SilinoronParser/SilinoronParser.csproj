@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2E7D360F-9B9F-46B1-9AEE-473C30570AA0}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SilinoronParser</RootNamespace>
+    <AssemblyName>SilinoronParser</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Enums\ChatMessageType.cs" />
+    <Compile Include="Enums\ChatTag.cs" />
+    <Compile Include="Enums\Class.cs" />
+    <Compile Include="Enums\CreatureFamily.cs" />
+    <Compile Include="Enums\CreatureRank.cs" />
+    <Compile Include="Enums\CreatureType.cs" />
+    <Compile Include="Enums\CreatureTypeFlag.cs" />
+    <Compile Include="Enums\GameobjectType.cs" />
+    <Compile Include="Enums\Gender.cs" />
+    <Compile Include="Enums\HighGuidMask.cs" />
+    <Compile Include="Enums\HighGuidType.cs" />
+    <Compile Include="Enums\Indices.cs" />
+    <Compile Include="Enums\Language.cs" />
+    <Compile Include="Enums\MoveAnimationState.cs" />
+    <Compile Include="Enums\MoveFlag.cs" />
+    <Compile Include="Enums\MoveFlagExtra.cs" />
+    <Compile Include="Enums\ObjectType.cs" />
+    <Compile Include="Enums\Race.cs" />
+    <Compile Include="Enums\SpeedType.cs" />
+    <Compile Include="Enums\SplineFlag.cs" />
+    <Compile Include="Enums\SplineMode.cs" />
+    <Compile Include="Enums\SplineType.cs" />
+    <Compile Include="Enums\UpdateField.cs" />
+    <Compile Include="Enums\UpdateFlag.cs" />
+    <Compile Include="Enums\UpdateType.cs" />
+    <Compile Include="Loading\Loader.cs" />
+    <Compile Include="Loading\LoaderAttribute.cs" />
+    <Compile Include="Loading\Loaders\Zor4xxLoader.cs" />
+    <Compile Include="Loading\Reader.cs" />
+    <Compile Include="Parsing\Handler.cs" />
+    <Compile Include="Parsing\ParserAttribute.cs" />
+    <Compile Include="Parsing\Parsers\ChatHandler.cs" />
+    <Compile Include="Parsing\Parsers\MovementHandler.cs" />
+    <Compile Include="Parsing\Parsers\ObjectHandler.cs" />
+    <Compile Include="Parsing\Parsers\QueryHandler.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\CharacterInfo.cs" />
+    <Compile Include="Util\CommandLine.cs" />
+    <Compile Include="Util\Extensions.cs" />
+    <Compile Include="Util\Guid.cs" />
+    <Compile Include="Util\MovementInfo.cs" />
+    <Compile Include="Util\Packet.cs" />
+    <Compile Include="Util\Quaternion.cs" />
+    <Compile Include="Util\StartInfo.cs" />
+    <Compile Include="Util\UpdateField.cs" />
+    <Compile Include="Util\Utilities.cs" />
+    <Compile Include="Util\Vector2.cs" />
+    <Compile Include="Util\Vector3.cs" />
+    <Compile Include="Util\Vector4.cs" />
+    <Compile Include="Util\WowObject.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
