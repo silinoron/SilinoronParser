@@ -197,9 +197,9 @@ namespace SilinoronParser.Parsing.Parsers
 
                 for (var i = 0; i < waypoints - 1; i++) {
                     var vec = packet.ReadPackedVector3();
-                    vec.X -= mid.X;
-                    vec.Y -= mid.Y;
-                    vec.Z -= mid.Z;
+                    vec.X += mid.X;
+                    vec.Y += mid.Y;
+                    vec.Z += mid.Z;
 
                     Console.WriteLine("Waypoint " + (i + 1) + ": " + vec);
                 }
