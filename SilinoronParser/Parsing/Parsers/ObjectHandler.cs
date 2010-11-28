@@ -11,11 +11,14 @@ namespace SilinoronParser.Parsing.Parsers
     {
         public static readonly Dictionary<int, Dictionary<Guid, WowObject>> Objects = new Dictionary<int, Dictionary<Guid, WowObject>>();
 
-        // temporarily disable this...
-        //[Parser(Index.HandleUpdateObjectIndex)]
+        [Parser(Index.HandleUpdateObjectIndex)]
         public static void HandleUpdateObject(Packet packet)
         {
-            Console.WriteLine("Update Object");
+            if (packet.GetOpcode() == (ushort)Opcode.SMSG_COMPRESSED_UPDATE_OBJECT)
+                Console.WriteLine("SMSG_COMPRESSED_UPDATE_OBJECT");
+            else
+                Console.WriteLine("SMSG_UPDATE_OBJECT");
+
             var map = packet.ReadUInt16();
             Console.WriteLine("Map: " + map);
             var count = packet.ReadInt32();
@@ -27,26 +30,22 @@ namespace SilinoronParser.Parsing.Parsers
                 packet.SetPosition(sposition);
             else
             {
-                Console.WriteLine("unkByte: " + unkByte);
-                var unkInt = packet.ReadUInt32();
-                Console.WriteLine("Unk int: " + unkInt);
-                long position = packet.GetPosition();
-                if (unkInt != 0) {
+                Console.WriteLine("firstType: " + unkByte);
+                var guidCount = packet.ReadUInt32();
+                Console.WriteLine("Guid count: " + guidCount);
+                if (guidCount != 0) {
                     // stuff needs doing
-                    for (uint i = 0; i < unkInt; i++) {
+                    for (uint i = 0; i < guidCount; i++) {
                         var guid = packet.ReadPackedGuid();
-                        Console.WriteLine("Unk guid: " + guid);
+                        Console.WriteLine("GUID " + (i + 1) + ": " + guid);
                     }
                 }
-                // the client does it AGAIN for some reason
-                //packet.SetPosition(position);
-                packet.SetPosition(sposition);
             }
 
-            for (var i = 0; i < count; i++)
+            for (var i = 0; i < (count - ((unkByte == 3) ? 1 : 0)); i++)
             {
                 var type = (UpdateType)packet.ReadByte();
-                Console.WriteLine("Update Type: " + type);
+                Console.WriteLine("Update Type #" + (i + 1) + ": " + type);
 
                 switch (type)
                 {
@@ -57,9 +56,9 @@ namespace SilinoronParser.Parsing.Parsers
 
                             var updates = ReadValuesUpdateBlock(packet);
 
-                            WowObject obj;
-                            if (Objects[MovementHandler.CurrentMapId].TryGetValue(guid, out obj))
-                                HandleUpdateFieldChangedValues(false, guid, obj.Type, updates, obj.Movement);
+                          WowObject obj;
+                          if (Objects.ContainsKey(map) && Objects[map].TryGetValue(guid, out obj))
+                              HandleUpdateFieldChangedValues(false, guid, obj.Type, updates, obj.Movement);
                             break;
                         }
                     case UpdateType.Movement:
@@ -67,7 +66,11 @@ namespace SilinoronParser.Parsing.Parsers
                             var guid = packet.ReadPackedGuid();
                             Console.WriteLine("GUID: " + guid);
 
+                            var objectType = (ObjectType)packet.ReadByte();
+                            Console.WriteLine("Object type: " + objectType);
+
                             ReadMovementUpdateBlock(packet, guid);
+                            ReadValuesUpdateBlock(packet);
                             break;
                         }
                     case UpdateType.CreateObject1:
@@ -107,23 +110,9 @@ namespace SilinoronParser.Parsing.Parsers
             var obj = new WowObject(guid, objType, moves);
             obj.Position = moves.Position;
 
-            var objects = Objects[map];
-            var shouldAdd = true;
-            foreach (var woObj in objects.Values)
-            {
-                if (woObj.Position != obj.Position && woObj.Guid != guid)
-                    continue;
-
-                shouldAdd = false;
-                break;
-            }
-
-            if (!shouldAdd)
-                return;
-
-            objects.Add(guid, obj);
-
-            HandleUpdateFieldChangedValues(true, guid, objType, updates, moves);
+            if (!Objects.ContainsKey(map))
+                Objects.Add(map, new Dictionary<Guid, WowObject>());
+            Objects[map].Add(guid, obj);
         }
 
         public static Dictionary<int, UpdateField> ReadValuesUpdateBlock(Packet packet)
@@ -317,6 +306,8 @@ namespace SilinoronParser.Parsing.Parsers
                 if (flags)
                     finalValue = "0x" + ((int)finalValue).ToString("X8");
             }
+
+            // add to storage
         }
 
         public static MovementInfo ReadMovementUpdateBlock(Packet packet, Guid guid)
@@ -481,14 +472,14 @@ namespace SilinoronParser.Parsing.Parsers
             return moveInfo;
         }
 
-        // need to find this one
-        /* [Parser(Opcode.SMSG_COMPRESSED_UPDATE_OBJECT)]
+        [Parser(Index.HandleCompressedUpdateObjectIndex)]
         public static void HandleCompressedUpdateObject(Packet packet)
         {
             var decompCount = packet.ReadInt32();
             var pkt = packet.Inflate(decompCount);
             HandleUpdateObject(pkt);
-        } */
+            packet.SetPosition(packet.GetLength());
+        }
 
         [Parser(Index.HandleDestroyObjectIndex)]
         public static void HandleDestroyObject(Packet packet)

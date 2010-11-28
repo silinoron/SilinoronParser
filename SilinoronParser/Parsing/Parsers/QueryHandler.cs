@@ -9,7 +9,7 @@ namespace SilinoronParser.Parsing.Parsers
         [Parser(Index.HandleGuildQueryResponseIndex)]
         public static void HandleGuildQueryResponse(Packet packet)
         {
-            Console.WriteLine("Guild query response");
+            Console.WriteLine("SMSG_GUILD_QUERY_RESPONSE");
             var unkLong = packet.ReadInt64();
             Console.WriteLine("Guild ID: " + unkLong);
             var guildName = packet.ReadCString();
@@ -49,7 +49,7 @@ namespace SilinoronParser.Parsing.Parsers
         [Parser(Index.HandleNameQueryResponseIndex)]
         public static void HandleNameQueryResponse(Packet packet)
         {
-            Console.WriteLine("Name query response");
+            Console.WriteLine("SMSG_NAME_QUERY_RESPONSE");
             var pguid = packet.ReadPackedGuid();
             Console.WriteLine("GUID: " + pguid);
 
@@ -90,7 +90,7 @@ namespace SilinoronParser.Parsing.Parsers
         [Parser(Index.HandleCreatureQueryResponseIndex)]
         public static void HandleCreatureQueryResponse(Packet packet)
         {
-            Console.WriteLine("Creature query response");
+            Console.WriteLine("SMSG_CREATURE_QUERY_RESPONSE");
 
             var entry = packet.ReadEntry();
             Console.WriteLine("Entry: " + entry.Key);
@@ -163,7 +163,7 @@ namespace SilinoronParser.Parsing.Parsers
         [Parser(Index.HandleGameobjectQueryResponseIndex)]
         public static void GameobjectQueryResponse(Packet packet)
         {
-            Console.WriteLine("Gameobject Query Response");
+            Console.WriteLine("SMSG_GAMEOBJECT_QUERY_RESPONSE");
 
             var entry = packet.ReadEntry();
             Console.WriteLine("Entry: " + entry.Key);
