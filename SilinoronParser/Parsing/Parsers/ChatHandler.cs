@@ -9,19 +9,14 @@ namespace SilinoronParser.Parsing.Parsers
         [Parser(Index.HandleMessageChatIndex)]
         public static void HandleMessageChat(Packet packet)
         {
-            Console.WriteLine("SMSG_MESSAGECHAT");
-
             var type = (ChatMessageType)packet.ReadByte();
             Console.WriteLine("Type: " + type);
 
             var lang = (Language)packet.ReadInt32();
             Console.WriteLine("Language: " + lang);
 
-            var guid = packet.ReadGuid();
-            Console.WriteLine("GUID: " + guid);
-
-            var unkInt = packet.ReadInt32();
-            Console.WriteLine("Unk Int32: " + unkInt);
+            packet.ReadGuid("GUID");
+            packet.ReadInt32("Unk Int32");
 
             switch (type)
             {
@@ -49,13 +44,9 @@ namespace SilinoronParser.Parsing.Parsers
                 case ChatMessageType.GuildAchievement:
                     {
                         if (type == ChatMessageType.Channel)
-                        {
-                            var chanName = packet.ReadCString();
-                            Console.WriteLine("Channel Name: " + chanName);
-                        }
+                            packet.ReadCString("Channel Name");
 
-                        var senderGuid = packet.ReadGuid();
-                        Console.WriteLine("Sender GUID: " + senderGuid);
+                        packet.ReadGuid("Sender GUID");
                         break;
                     }
                 case ChatMessageType.MonsterSay:
@@ -67,32 +58,22 @@ namespace SilinoronParser.Parsing.Parsers
                 case ChatMessageType.RaidBossWhisper:
                 case ChatMessageType.BattleNet:
                     {
-                        var nameLen = packet.ReadInt32();
-                        Console.WriteLine("Name Length: " + nameLen);
-
-                        var name = packet.ReadCString();
-                        Console.WriteLine("Name: " + name);
-
-                        var target = packet.ReadGuid();
-                        Console.WriteLine("Receiver GUID: " + guid);
+                        packet.ReadInt32("Name Length");
+                        packet.ReadCString("Name");
+                        var target = packet.ReadGuid("Receiver GUID");
 
                         if (target.Full != 0)
                         {
-                            var tNameLen = packet.ReadInt32();
-                            Console.WriteLine("Receiver Name Length: " + tNameLen);
-
-                            var tName = packet.ReadCString();
-                            Console.WriteLine("Receiver Name: " + tName);
+                            packet.ReadInt32("Receiver Name Length");
+                            packet.ReadCString("Receiver Name");
                         }
+
                         break;
                     }
             }
 
-            var textLen = packet.ReadInt32();
-            Console.WriteLine("Text Length: " + textLen);
-
-            var text = packet.ReadCString();
-            Console.WriteLine("Text: " + text);
+            packet.ReadInt32("Text Length");
+            packet.ReadCString("Text");
 
             var chatTag = (ChatTag)packet.ReadByte();
             Console.WriteLine("Chat Tag: " + chatTag);
@@ -100,8 +81,39 @@ namespace SilinoronParser.Parsing.Parsers
             if (type != ChatMessageType.Achievement && type != ChatMessageType.GuildAchievement)
                 return;
 
-            var achId = packet.ReadInt32();
-            Console.WriteLine("Achievement ID: " + achId);
+            packet.ReadInt32("Achievement ID");
+        }
+
+        [Parser(Index.HandleEmoteIndex)]
+        public static void HandleEmote(Packet packet)
+        {
+            packet.ReadInt32("Emote");
+            packet.ReadGuid("GUID");
+        }
+
+        [Parser(Index.HandleTextEmoteIndex)]
+        public static void HandleTextEmote(Packet packet)
+        {
+            packet.ReadGuid("GUID");
+            packet.ReadInt32("Text Emote");
+            packet.ReadInt32("Emote #");
+            packet.ReadInt32("Name Length");
+            packet.ReadCString("Name");
+        }
+
+        [Parser(Index.HandleChannelListIndex)]
+        public static void HandleChannelList(Packet packet)
+        {
+            packet.ReadByte("Channel Type");
+            packet.ReadCString("Channel Name");
+            packet.ReadByte("Channel Flags");
+            var listSize = packet.ReadInt32("List Size");
+
+            for (int i = 0; i < listSize; i++)
+            {
+                packet.ReadGuid("Player GUID");
+                packet.ReadByte("Player Flags");
+            }
         }
     }
 }

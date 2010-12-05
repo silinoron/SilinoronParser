@@ -217,5 +217,111 @@ namespace SilinoronParser.Util
             handle.Free();
             return returnObject;
         }
+
+        public T Read<T>(string name)
+            where T : struct
+        {
+            T val = ReadStruct<T>();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public byte ReadByte(string name)
+        {
+            var val = ReadByte();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public short ReadInt16(string name)
+        {
+            var val = ReadInt16();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public int ReadInt32(string name)
+        {
+            var val = ReadInt32();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public long ReadInt64(string name)
+        {
+            var val = ReadInt64();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public Guid ReadGuid(string name)
+        {
+            var val = ReadGuid();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public string ReadCString(string name)
+        {
+            var val = ReadCString();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public Guid ReadPackedGuid(string name)
+        {
+            var val = ReadPackedGuid();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public float ReadSingle(string name)
+        {
+            var val = ReadSingle();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public bool ReadBoolean(string name)
+        {
+            var val = ReadBoolean();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public KeyValuePair<int, bool> ReadEntryKey(string name)
+        {
+            var entry = ReadEntry();
+            Console.WriteLine("{0}: {1}", name, entry.Key);
+            return entry;
+        }
+
+        public Vector4 ReadVector4(string name)
+        {
+            var val = ReadVector4();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public Vector3 ReadVector3(string name)
+        {
+            var val = ReadVector3();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public Quaternion ReadPackedQuaternion(string name)
+        {
+            var val = ReadPackedQuaternion();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public DateTime ReadTime(string name)
+        {
+            var val = ReadTime();
+            Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
     }
 }

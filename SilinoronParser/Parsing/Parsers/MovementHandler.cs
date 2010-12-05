@@ -24,107 +24,64 @@ namespace SilinoronParser.Parsing.Parsers
             var flags2 = (MoveFlagExtra)packet.ReadInt16();
             Console.WriteLine("Extra Movement Flags: " + flags2);
 
-            var time = packet.ReadInt32();
-            Console.WriteLine("Time: " + time);
-
-            var pos = packet.ReadVector4();
-            Console.WriteLine("Position: " + pos);
+            packet.ReadInt32("Time");
+            var pos = packet.ReadVector4("Position");
             info.Position = new Vector3(pos.X, pos.Y, pos.Z);
             info.Orientation = pos.O;
 
             if (moveFlags.HasFlag(MoveFlag.OnTransport))
             {
-                var tguid = packet.ReadPackedGuid();
-                Console.WriteLine("Transport GUID: " + tguid);
-
-                var tpos = packet.ReadVector4();
-                Console.WriteLine("Transport Position: " + tpos);
-
-                var ttime = packet.ReadInt32();
-                Console.WriteLine("Transport Time: " + ttime);
-
-                var seat = packet.ReadByte();
-                Console.WriteLine("Transport Seat: " + seat);
+                packet.ReadPackedGuid("Transport GUID");
+                packet.ReadVector4("Transport Position");
+                packet.ReadInt32("Transport Time");
+                packet.ReadByte("Transport Seat");
 
                 if (flags2.HasFlag(MoveFlagExtra.InterpolatedPlayerMovement))
-                {
-                    var ttime2 = packet.ReadInt32();
-                    Console.WriteLine("Transport Time 2: " + ttime2);
-                }
+                    packet.ReadInt32("Transport Time 2");
             }
 
             if (moveFlags.HasAnyFlag(MoveFlag.Swimming | MoveFlag.Flying) ||
                 flags2.HasFlag(MoveFlagExtra.AlwaysAllowPitching))
-            {
-                var swimPitch = packet.ReadSingle();
-                Console.WriteLine("Swim Pitch: " + swimPitch);
-            }
+                packet.ReadSingle("Swim Pitch");
 
-            var fallTime = packet.ReadInt32();
-            Console.WriteLine("Fall Time: " + fallTime);
+            packet.ReadInt32("Fall Time");
 
             if (moveFlags.HasFlag(MoveFlag.Falling))
             {
-                var junk = packet.ReadSingle();
-                Console.WriteLine("Jump Velocity: " + junk);
-
-                var jsin = packet.ReadSingle();
-                Console.WriteLine("Jump Sin: " + jsin);
-
-                var jcos = packet.ReadSingle();
-                Console.WriteLine("Jump Cos: " + jcos);
-
-                var jxys = packet.ReadSingle();
-                Console.WriteLine("Jump XY Speed: " + jxys);
+                packet.ReadSingle("Jump Velocity");
+                packet.ReadSingle("Jump Sin");
+                packet.ReadSingle("Jump Cos");
+                packet.ReadSingle("Jump XY Speed");
             }
 
             if (moveFlags.HasFlag(MoveFlag.SplineElevation))
-            {
-                var unkSpline = packet.ReadSingle();
-                Console.WriteLine("Spline Elevation: " + unkSpline);
-            }
+                packet.ReadSingle("Spline Elevation");
 
             return info;
         }
 
-        [Parser(188)]
+        [Parser(Index.HandleHeartbeatIndex)]
         public static void ParseUnkMovementPacket(Packet packet)
         {
-            Console.WriteLine("Unk movement packet");
-            var guid = packet.ReadPackedGuid();
-            Console.WriteLine("Guid: " + guid);
-            var movementInfo = ReadMovementInfo(packet, guid);
+            var guid = packet.ReadPackedGuid("Guid");
+            ReadMovementInfo(packet, guid);
         }
 
         [Parser(Index.HandleMonsterMoveIndex)]
         [Parser(Index.HandleMonsterMoveTransportIndex)]
         public static void ParseMonsterMovePackets(Packet packet)
         {
-            if (packet.GetOpcode() == (ushort)Opcode.SMSG_MONSTER_MOVE_TRANSPORT)
-                Console.WriteLine("SMSG_MONSTER_MOVE_TRANSPORT");
-            else
-                Console.WriteLine("SMSG_MONSTER_MOVE");
-
-            var guid = packet.ReadPackedGuid();
-            Console.WriteLine("GUID: " + guid);
+            var guid = packet.ReadPackedGuid("GUID");
 
             if (packet.GetOpcode() == (ushort)Opcode.SMSG_MONSTER_MOVE_TRANSPORT)
             {
-                var transguid = packet.ReadPackedGuid();
-                Console.WriteLine("Transport GUID: " + transguid);
-
-                var transseat = packet.ReadByte();
-                Console.WriteLine("Transport Seat: " + transseat);
+                packet.ReadPackedGuid("Transport GUID");
+                packet.ReadByte("Transport Seat");
             }
 
-            var unkByte = packet.ReadBoolean();
-            Console.WriteLine("Unk Boolean: " + unkByte);
-
-            var pos = packet.ReadVector3();
-            Console.WriteLine("Position: " + pos);
-
-            var curTime = packet.ReadInt32();
-            Console.WriteLine("Move Ticks: " + curTime);
+            packet.ReadBoolean("Unk Boolean");
+            var pos = packet.ReadVector3("Position");
+            packet.ReadInt32("Move Ticks");
 
             var type = (SplineType)packet.ReadByte();
             Console.WriteLine("Spline Type: " + type);
@@ -133,20 +90,17 @@ namespace SilinoronParser.Parsing.Parsers
             {
                 case SplineType.FacingSpot:
                     {
-                        var spot = packet.ReadVector3();
-                        Console.WriteLine("Facing Spot: " + spot);
+                        packet.ReadVector3("Facing Spot");
                         break;
                     }
                 case SplineType.FacingTarget:
                     {
-                        var tguid = packet.ReadGuid();
-                        Console.WriteLine("Facing GUID: " + tguid);
+                        packet.ReadGuid("Facing GUID");
                         break;
                     }
                 case SplineType.FacingAngle:
                     {
-                        var angle = packet.ReadSingle();
-                        Console.WriteLine("Facing Angle: " + angle);
+                        packet.ReadSingle("Facing Angle");
                         break;
                     }
                 case SplineType.Stop:
@@ -162,31 +116,23 @@ namespace SilinoronParser.Parsing.Parsers
                 var unkByte3 = (MoveAnimationState)packet.ReadByte();
                 Console.WriteLine("Animation State: " + unkByte3);
 
-                var unkInt1 = packet.ReadInt32();
-                Console.WriteLine("Unk Int32 1: " + unkInt1);
+                packet.ReadInt32("Unk Int32 1");
             }
 
-            var time = packet.ReadInt32();
-            Console.WriteLine("Move Time: " + time);
+            packet.ReadInt32("Move Time");
 
             if (flags.HasFlag(SplineFlag.Trajectory)) {
-                var unkFloat = packet.ReadSingle();
-                Console.WriteLine("Unk Single: " + unkFloat);
-
-                var unkInt2 = packet.ReadInt32();
-                Console.WriteLine("Unk Int32 2: " + unkInt2);
+                packet.ReadSingle("Unk Single");
+                packet.ReadInt32("Unk Int32 2");
             }
 
-            var waypoints = packet.ReadInt32();
-            Console.WriteLine("Waypoints: " + waypoints);
+            var waypoints = packet.ReadInt32("Waypoints");
 
-            var newpos = packet.ReadVector3();
-            Console.WriteLine("Waypoint 0: " + newpos);
+            var newpos = packet.ReadVector3("Waypoint 0");
 
             if (flags.HasFlag(SplineFlag.Flying) || flags.HasFlag(SplineFlag.CatmullRom)) {
                 for (var i = 0; i < waypoints - 1; i++) {
-                    var vec = packet.ReadVector3();
-                    Console.WriteLine("Waypoint " + (i + 1) + ": " + vec);
+                    packet.ReadVector3("Waypoint " + (i + 1));
                 }
             }
             else {

@@ -14,15 +14,8 @@ namespace SilinoronParser.Parsing.Parsers
         [Parser(Index.HandleUpdateObjectIndex)]
         public static void HandleUpdateObject(Packet packet)
         {
-            if (packet.GetOpcode() == (ushort)Opcode.SMSG_COMPRESSED_UPDATE_OBJECT)
-                Console.WriteLine("SMSG_COMPRESSED_UPDATE_OBJECT");
-            else
-                Console.WriteLine("SMSG_UPDATE_OBJECT");
-
-            var map = packet.ReadUInt16();
-            Console.WriteLine("Map: " + map);
-            var count = packet.ReadInt32();
-            Console.WriteLine("Count: " + count);
+            var map = packet.ReadInt16("Map");
+            var count = packet.ReadInt32("Count");
 
             long sposition = packet.GetPosition();
             var unkByte = packet.ReadByte();
@@ -31,14 +24,11 @@ namespace SilinoronParser.Parsing.Parsers
             else
             {
                 Console.WriteLine("firstType: " + unkByte);
-                var guidCount = packet.ReadUInt32();
-                Console.WriteLine("Guid count: " + guidCount);
-                if (guidCount != 0) {
+                var guidCount = packet.ReadInt32("GUID Count");
+                if (guidCount > 0) {
                     // stuff needs doing
-                    for (uint i = 0; i < guidCount; i++) {
-                        var guid = packet.ReadPackedGuid();
-                        Console.WriteLine("GUID " + (i + 1) + ": " + guid);
-                    }
+                    for (uint i = 0; i < guidCount; i++)
+                        packet.ReadPackedGuid("GUID " + (i + 1));
                 }
             }
 
@@ -51,20 +41,17 @@ namespace SilinoronParser.Parsing.Parsers
                 {
                     case UpdateType.Values:
                         {
-                            var guid = packet.ReadPackedGuid();
-                            Console.WriteLine("GUID: " + guid);
-
+                            var guid = packet.ReadPackedGuid("GUID");
                             var updates = ReadValuesUpdateBlock(packet);
 
-                          WowObject obj;
-                          if (Objects.ContainsKey(map) && Objects[map].TryGetValue(guid, out obj))
-                              HandleUpdateFieldChangedValues(false, guid, obj.Type, updates, obj.Movement);
+                            WowObject obj;
+                            if (Objects.ContainsKey(map) && Objects[map].TryGetValue(guid, out obj))
+                                HandleUpdateFieldChangedValues(false, guid, obj.Type, updates, obj.Movement);
                             break;
                         }
                     case UpdateType.Movement:
                         {
-                            var guid = packet.ReadPackedGuid();
-                            Console.WriteLine("GUID: " + guid);
+                            var guid = packet.ReadPackedGuid("GUID");
 
                             var objectType = (ObjectType)packet.ReadByte();
                             Console.WriteLine("Object type: " + objectType);
@@ -76,30 +63,24 @@ namespace SilinoronParser.Parsing.Parsers
                     case UpdateType.CreateObject1:
                     case UpdateType.CreateObject2:
                         {
-                            var guid = packet.ReadPackedGuid();
-                            Console.WriteLine("GUID: " + guid);
-
+                            var guid = packet.ReadPackedGuid("GUID");
                             ReadCreateObjectBlock(packet, guid, map);
                             break;
                         }
                     case UpdateType.FarObjects:
                     case UpdateType.NearObjects:
                         {
-                            var objCount = packet.ReadInt32();
-                            Console.WriteLine("Object Count: " + objCount);
+                            var objCount = packet.ReadInt32("Object Count");
 
                             for (var j = 0; j < objCount; j++)
-                            {
-                                var guid = packet.ReadPackedGuid();
-                                Console.WriteLine("Object GUID: " + guid);
-                            }
+                                packet.ReadPackedGuid("Object GUID");
                             break;
                         }
                 }
             }
         }
 
-        public static void ReadCreateObjectBlock(Packet packet, Guid guid, ushort map)
+        public static void ReadCreateObjectBlock(Packet packet, Guid guid, short map)
         {
             var objType = (ObjectType)packet.ReadByte();
             Console.WriteLine("Object Type: " + objType);
@@ -117,8 +98,7 @@ namespace SilinoronParser.Parsing.Parsers
 
         public static Dictionary<int, UpdateField> ReadValuesUpdateBlock(Packet packet)
         {
-            var maskSize = packet.ReadByte();
-            Console.WriteLine("Block Count: " + maskSize);
+            var maskSize = packet.ReadByte("Block Count");
 
             var updateMask = new int[maskSize];
             for (var i = 0; i < maskSize; i++)
@@ -349,125 +329,68 @@ namespace SilinoronParser.Parsing.Parsers
                     Console.WriteLine("Spline Flags: " + splineFlags);
 
                     if (splineFlags.HasFlag(SplineFlag.FinalPoint))
-                    {
-                        var splineCoords = packet.ReadVector3();
-                        Console.WriteLine("Final Spline Coords: " + splineCoords);
-                    }
+                        packet.ReadVector3("Final Spline Coords");
 
                     if (splineFlags.HasFlag(SplineFlag.FinalTarget))
-                    {
-                        var splineTarget = packet.ReadGuid();
-                        Console.WriteLine("Final Spline Target GUID: " + splineTarget);
-                    }
+                        packet.ReadGuid("Final Spline Target GUID");
 
                     if (splineFlags.HasFlag(SplineFlag.FinalOrientation))
-                    {
-                        var splineOrient = packet.ReadSingle();
-                        Console.WriteLine("Final Spline Orientation: " + splineOrient);
-                    }
+                        packet.ReadSingle("Final Spline Orientation");
 
-                    var splineTime = packet.ReadInt32();
-                    Console.WriteLine("Spline Time: " + splineTime);
+                    packet.ReadInt32("Spline Time");
+                    packet.ReadInt32("Spline Full Time");
+                    packet.ReadInt32("Spline Unk Int32 1");
+                    packet.ReadSingle("Spline Duration Multiplier");
+                    packet.ReadSingle("Spline Unit Interval");
+                    packet.ReadSingle("Spline Unk Float 2");
+                    packet.ReadInt32("Spline Height Time");
 
-                    var fullTime = packet.ReadInt32();
-                    Console.WriteLine("Spline Full Time: " + fullTime);
-
-                    var unk1 = packet.ReadInt32();
-                    Console.WriteLine("Spline Unk Int32 1: " + unk1);
-
-                    var duraMul = packet.ReadSingle();
-                    Console.WriteLine("Spline Duration Multiplier: " + duraMul);
-
-                    var unk3 = packet.ReadSingle();
-                    Console.WriteLine("Spline Unit Interval: " + unk3);
-
-                    var unk4 = packet.ReadSingle();
-                    Console.WriteLine("Spline Unk Float 2: " + unk4);
-
-                    var unk5 = packet.ReadInt32();
-                    Console.WriteLine("Spline Height Time: " + unk5);
-
-                    var splineCount = packet.ReadInt32();
+                    var splineCount = packet.ReadInt32("Spline Count");
                     for (var i = 0; i < splineCount; i++)
-                    {
-                        var coords = packet.ReadVector3();
-                        Console.WriteLine("Spline Waypoint " + i + ": " + coords);
-                    }
+                        packet.ReadVector3("Spline Waypoint " + i);
 
                     var mode = (SplineMode)packet.ReadByte();
                     Console.WriteLine("Spline Mode: " + mode);
 
-                    var endpoint = packet.ReadVector3();
-                    Console.WriteLine("Spline Endpoint: " + endpoint);
+                    packet.ReadVector3("Spline Endpoint");
                 }
             }
             else
             {
                 if (flags.HasFlag(UpdateFlag.GOPosition))
                 {
-                    var goguid = packet.ReadPackedGuid();
-                    Console.WriteLine("GO Position GUID: " + goguid);
-
-                    var gopos = packet.ReadVector3();
-                    Console.WriteLine("GO Position: " + gopos);
-
-                    var gopos2 = packet.ReadVector3();
-                    Console.WriteLine("GO Transport Position: " + gopos2);
-
-                    var goFacing = packet.ReadSingle();
-                    Console.WriteLine("GO Orientation: " + goFacing);
-
+                    packet.ReadPackedGuid("GO Position GUID");
+                    var gopos = packet.ReadVector3("GO Position");
+                    packet.ReadVector3("GO Transport Position");
+                    var goFacing = packet.ReadSingle("GO Orientation");
                     moveInfo.Position = gopos;
                     moveInfo.Orientation = goFacing;
-
-                    var goflt = packet.ReadSingle();
-                    Console.WriteLine("GO Transport Orientation: " + goflt);
+                    packet.ReadSingle("GO Transport Orientation");
                 }
                 else if (flags.HasFlag(UpdateFlag.StationaryObject))
-                {
-                    var ufpos = packet.ReadVector4();
-                    Console.WriteLine("Stationary Position: " + ufpos);
-                }
+                    packet.ReadVector4("Stationary Position");
             }
 
             if (flags.HasFlag(UpdateFlag.Unknown1))
-            {
-                var lguid = packet.ReadInt32();
-                Console.WriteLine("Unk Int32: " + lguid);
-            }
+                packet.ReadInt32("Unk Int32");
 
             if (flags.HasFlag(UpdateFlag.LowGuid))
-            {
-                var hguid = packet.ReadInt32();
-                Console.WriteLine("Low GUID: " + hguid);
-            }
+                packet.ReadInt32("Low GUID");
 
             if (flags.HasFlag(UpdateFlag.AttackingTarget))
-            {
-                var targetGuid = packet.ReadPackedGuid();
-                Console.WriteLine("Target GUID: " + targetGuid);
-            }
+                packet.ReadPackedGuid("Target GUID");
 
             if (flags.HasFlag(UpdateFlag.Transport))
-            {
-                var ttime = packet.ReadInt32();
-                Console.WriteLine("Transport Creation Time: " + ttime);
-            }
+                packet.ReadInt32("Transport Creation Time");
 
             if (flags.HasFlag(UpdateFlag.Vehicle))
             {
-                var vehId = packet.ReadInt32();
-                Console.WriteLine("Vehicle ID: " + vehId);
-
-                var vehFacing = packet.ReadSingle();
-                Console.WriteLine("Vehicle Orientation: " + vehFacing);
+                packet.ReadInt32("Vehicle ID");
+                packet.ReadSingle("Vehicle Orientation");
             }
 
             if (flags.HasFlag(UpdateFlag.GORotation))
-            {
-                var gorot = packet.ReadPackedQuaternion();
-                Console.WriteLine("GO Rotation: " + gorot);
-            }
+                packet.ReadPackedQuaternion("GO Rotation");
 
             return moveInfo;
         }
@@ -478,18 +401,16 @@ namespace SilinoronParser.Parsing.Parsers
             var decompCount = packet.ReadInt32();
             var pkt = packet.Inflate(decompCount);
             HandleUpdateObject(pkt);
+
+            // otherwise Handler.cs will bitch about not reading the entire packet
             packet.SetPosition(packet.GetLength());
         }
 
         [Parser(Index.HandleDestroyObjectIndex)]
         public static void HandleDestroyObject(Packet packet)
         {
-            Console.WriteLine("Destroy Object");
-            var guid = packet.ReadGuid();
-            Console.WriteLine("GUID: " + guid);
-
-            var anim = packet.ReadBoolean();
-            Console.WriteLine("Despawn Animation: " + anim);
+            packet.ReadGuid("GUID");
+            packet.ReadBoolean("Despawn Animation");
         }
     }
 }
