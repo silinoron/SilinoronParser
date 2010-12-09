@@ -82,7 +82,7 @@ namespace SilinoronParser
             var usage = "Usage: SilinoronParser -file <input file> -loader <loader type> " +
                 "[-nodump <boolean>] [-nohex <boolean>]" + n + n +
                 "-file\t\tThe file to read packets from." + n +
-                "-loader\t\tThe loader to use (zor4xx/tiawps)." + n +
+                "-loader\t\tThe loader to use (zor4xx/tiawps/izidor)." + n +
                 "-nodump\t\tSet to True to disable file logging." + n +
                 "-nohex\t\tSet to True to not print out hex dumps.";
 

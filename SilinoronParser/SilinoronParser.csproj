@@ -81,6 +81,7 @@
     <Compile Include="Enums\UpdateType.cs" />
     <Compile Include="Loading\Loader.cs" />
     <Compile Include="Loading\LoaderAttribute.cs" />
+    <Compile Include="Loading\Loaders\IzidorLoader.cs" />
     <Compile Include="Loading\Loaders\TiawpsLoader.cs" />
     <Compile Include="Loading\Loaders\Zor4xxLoader.cs" />
     <Compile Include="Loading\Reader.cs" />
