@@ -1,6 +1,7 @@
 ﻿using System;
 using SilinoronParser.Util;
 using SilinoronParser.Enums;
+using SilinoronParser.SQLOutput;
 
 namespace SilinoronParser.Parsing.Parsers
 {
@@ -63,175 +64,191 @@ namespace SilinoronParser.Parsing.Parsers
         [Parser(Index.HandleCreatureQueryResponseIndex)]
         public static void HandleCreatureQueryResponse(Packet packet)
         {
+            Creature c = new Creature();
             var entry = packet.ReadEntryKey("Entry");
 
             if (entry.Value)
                 return;
 
-            for (var i = 0; i < 4; i++)
-                packet.ReadCString("Name " + i);
+            c.Entry = entry.Key;
 
-            packet.ReadCString("Sub Name");
-            packet.ReadCString("Icon Name");
+            for (var i = 0; i < 4; i++)
+                c.Name[i] = packet.ReadCString("Name " + i);
+
+            c.SubName = packet.ReadCString("Sub Name");
+            c.IconName = packet.ReadCString("Icon Name");
 
             var typeFlags = (CreatureTypeFlag)packet.ReadInt32();
+            c.TypeFlags = typeFlags;
             Console.WriteLine("Type Flags: " + typeFlags);
 
             var type = (CreatureType)packet.ReadInt32();
+            c.Type = type;
             Console.WriteLine("Type: " + type);
 
             var family = (CreatureFamily)packet.ReadInt32();
+            c.Family = family;
             Console.WriteLine("Family: " + family);
 
             var rank = (CreatureRank)packet.ReadInt32();
+            c.Rank = rank;
             Console.WriteLine("Rank: " + rank);
 
-            for (var i = 0; i < 2; i++)
-                packet.ReadInt32("Kill Credit " + i);
+            c.KillCredit1 = packet.ReadInt32("Kill Credit 1");
+            c.KillCredit2 = packet.ReadInt32("Kill Credit 2");
 
             for (var i = 0; i < 4; i++)
-                packet.ReadInt32("Display ID " + i);
+                c.DisplayIDs[i] = packet.ReadInt32("Display ID " + i);
 
-            packet.ReadSingle("Modifier 1");
-            packet.ReadSingle("Modifier 2");
-            packet.ReadBoolean("Racial Leader");
+            c.HealthModifier = packet.ReadSingle("Health Modifier");
+            c.ManaModifier = packet.ReadSingle("Mana Modifier");
+            c.RacialLeader = packet.ReadBoolean("Racial Leader");
 
             for (var i = 0; i < 6; i++)
-                packet.ReadInt32("Quest Item " + i);
+                c.QuestItems[i] = packet.ReadInt32("Quest Item " + i);
 
-            packet.ReadInt32("Movement ID");
-            packet.ReadInt32("Unk");
+            c.MovementID = packet.ReadInt32("Movement ID");
+            c.Unk = packet.ReadInt32("Unk");
+            CreatureStorage.GetSingleton().Add(c);
         }
 
         [Parser(Index.HandleGameobjectQueryResponseIndex)]
         public static void GameobjectQueryResponse(Packet packet)
         {
+            GameObject go = new GameObject();
             var entry = packet.ReadEntryKey("Entry");
-
+            go.Entry = entry.Key;
             if (entry.Value)
                 return;
 
             var type = (GameObjectType)packet.ReadInt32();
+            go.Type = type;
             Console.WriteLine("Type: " + type);
 
-            packet.ReadInt32("Display ID");
+            go.DisplayID = packet.ReadInt32("Display ID");
 
             for (var i = 0; i < 4; i++)
-                packet.ReadCString("Name " + i);
+                go.Name[i] = packet.ReadCString("Name " + i);
 
-            packet.ReadCString("Icon Name");
-            packet.ReadCString("Cast Caption");
-            packet.ReadCString("Unk String");
+            go.IconName = packet.ReadCString("Icon Name");
+            go.CastCaption = packet.ReadCString("Cast Caption");
+            go.UnkString = packet.ReadCString("Unk String");
 
             for (var i = 0; i < 24; i++)
-                packet.ReadInt32("Data " + i);
+                go.Data[i] = packet.ReadInt32("Data " + i);
 
-            packet.ReadSingle("Size");
+            go.Size = packet.ReadSingle("Size");
 
             for (var i = 0; i < 6; i++)
-                packet.ReadInt32("Quest Item " + i);
+                go.QuestItems[i] = packet.ReadInt32("Quest Item " + i);
 
-            packet.ReadInt32("Unk");
+            go.Unk = packet.ReadInt32("Unk");
+            GameObjectStorage.GetSingleton().Add(go);
         }
 
         [Parser(Index.HandleQuestQueryResponseIndex)]
         public static void HandleQuestQueryResponse(Packet packet)
         {
-            packet.ReadInt32("Entry");
+            Quest q = new Quest();
+            q.Entry = packet.ReadInt32("Entry");
             var method = (QuestMethod)packet.ReadInt32();
+            q.Method = method;
             Console.WriteLine("Method: {0}", method);
-            packet.ReadInt32("Level");
-            packet.ReadInt32("MinLevel");
+            q.Level = packet.ReadInt32("Level");
+            q.MinLevel = packet.ReadInt32("MinLevel");
             var sort = packet.ReadInt32();
             if (sort >= 0)
                 Console.WriteLine("Zone: {0}", sort);
             else
                 Console.WriteLine("Sort: {0}", (QuestSort)(-sort));
+            q.ZoneOrSort = sort;
             var questType = (QuestType)packet.ReadInt32();
+            q.Type = questType;
             Console.WriteLine("Type: {0}", questType);
-            packet.ReadInt32("GroupNum");
-            packet.ReadInt32("RepObjFaction1");
-            packet.ReadInt32("RepObjValue1");
-            packet.ReadInt32("RepObjFaction2");
-            packet.ReadInt32("RepObjValue2");
-            packet.ReadInt32("NextQuestID");
-            packet.ReadInt32("XPID");
-            packet.ReadInt32("Money");
-            packet.ReadInt32("MoneyAtMaxLevel");
-            packet.ReadInt32("Spell");
-            packet.ReadInt32("SpellCast");
-            packet.ReadInt32("Honor");
-            packet.ReadSingle("Honor (2)");
-            packet.ReadInt32("Source Item ID");
+            q.SuggestedPlayers = packet.ReadInt32("SuggestedPlayers");
+            q.RepObjectiveFaction1 = packet.ReadInt32("RepObjFaction1");
+            q.RepObjectiveValue1 = packet.ReadInt32("RepObjValue1");
+            q.RepObjectiveFaction2 = packet.ReadInt32("RepObjFaction2");
+            q.RepObjectiveValue2 = packet.ReadInt32("RepObjValue2");
+            q.NextQuestID = packet.ReadInt32("NextQuestID");
+            q.XPID = packet.ReadInt32("XPID");
+            q.RewardMoney = packet.ReadInt32("Money");
+            q.RewardMoneyAtMaxLevel = packet.ReadInt32("MoneyAtMaxLevel");
+            q.Spell = packet.ReadInt32("Spell");
+            q.SpellCast = packet.ReadInt32("SpellCast");
+            q.Honor = packet.ReadInt32("Honor");
+            q.HonorMultiplier = packet.ReadSingle("Honor (2)");
+            q.SourceItemID = packet.ReadInt32("Source Item ID");
             var questFlags = (QuestFlag)packet.ReadInt32();
+            q.Flags = questFlags;
             Console.WriteLine("Flags: {0} ({1})", (int)questFlags, questFlags);
-            packet.ReadInt32("Unk");
-            packet.ReadInt32("RewardTitleID");
-            packet.ReadInt32("PlayersSlain");
-            packet.ReadInt32("RewardTalentPoints");
-            packet.ReadInt32("RewardArenaPoints");
-            packet.ReadInt32("RewardSkillLineID");
-            packet.ReadInt32("RewardSkillPoints");
-            packet.ReadInt32("RewardFactionMask?");
-            packet.ReadInt32("QuestGiverPortraitID");
-            packet.ReadInt32("QuestTurnInPortraitID");
+            q.Unk = packet.ReadInt32("Unk");
+            q.RewardTitleID = packet.ReadInt32("RewardTitleID");
+            q.PlayersSlain = packet.ReadInt32("PlayersSlain");
+            q.RewardTalentPoints = packet.ReadInt32("RewardTalentPoints");
+            q.RewardArenaPoints = packet.ReadInt32("RewardArenaPoints");
+            q.RewardSkillLineID = packet.ReadInt32("RewardSkillLineID");
+            q.RewardSkillPoints = packet.ReadInt32("RewardSkillPoints");
+            q.RewardFactionMask = packet.ReadInt32("RewardFactionMask");
+            q.QuestGiverPortraitID = packet.ReadInt32("QuestGiverPortraitID");
+            q.QuestTurnInPortraitID = packet.ReadInt32("QuestTurnInPortraitID");
             for (int i = 0; i < 4; i++)
             {
-                packet.ReadInt32("RewardItem[" + i + "]");
-                packet.ReadInt32("RewardItemCount[" + i + "]");
+                q.RewardItem[i] = packet.ReadInt32("RewardItem[" + i + "]");
+                q.RewardItemCount[i] = packet.ReadInt32("RewardItemCount[" + i + "]");
             }
             for (int i = 0; i < 6; i++)
             {
-                packet.ReadInt32("RewardItemChoice[" + i + "]");
-                packet.ReadInt32("RewardItemChoiceCount[" + i + "]");
+                q.RewardItemChoice[i] = packet.ReadInt32("RewardItemChoice[" + i + "]");
+                q.RewardItemChoiceCount[i] = packet.ReadInt32("RewardItemChoiceCount[" + i + "]");
             }
             for (int i = 0; i < 5; i++)
-                packet.ReadInt32("RewardRepFactionID[" + i + "]");
+                q.RewardRepFactionID[i] = packet.ReadInt32("RewardRepFactionID[" + i + "]");
             for (int i = 0; i < 5; i++)
-                packet.ReadInt32("RewardRepValueID[" + i + "]");
+                q.RewardRepValueID[i] = packet.ReadInt32("RewardRepValueID[" + i + "]");
             for (int i = 0; i < 5; i++)
-                packet.ReadInt32("RewardRepValue[" + i + "]");
-            packet.ReadInt32("PointMapID");
-            packet.ReadSingle("PointX");
-            packet.ReadSingle("PointY");
-            packet.ReadInt32("PointOption");
-            packet.ReadCString("Title");
-            packet.ReadCString("ObjectiveText");
-            packet.ReadCString("Description");
-            packet.ReadCString("EndText");
-            // not sure...
-            packet.ReadCString("CompletionText_Standard");
+                q.RewardRepValue[i] = packet.ReadInt32("RewardRepValue[" + i + "]");
+            q.PointMapID = packet.ReadInt32("PointMapID");
+            q.PointX = packet.ReadSingle("PointX");
+            q.PointY = packet.ReadSingle("PointY");
+            q.PointOption = packet.ReadInt32("PointOption");
+            q.Title = packet.ReadCString("Title");
+            q.ObjectiveText = packet.ReadCString("ObjectiveText");
+            q.Description = packet.ReadCString("Description");
+            q.EndText = packet.ReadCString("EndText");
+            q.CompletionText = packet.ReadCString("CompletionText");
             for (int i = 0; i < 4; i++)
             {
-                packet.ReadInt32("RequiredCreatureOrGOID[" + i + "]");
-                packet.ReadInt32("RequiredCreatureOrGOCount[" + i + "]");
-                packet.ReadInt32("ItemDropIntermediateID[" + i + "]");
-                packet.ReadInt32("ItemDropIntermediateCount[" + i + "]");
+                q.RequiredCreatureOrGOID[i] = packet.ReadInt32("RequiredCreatureOrGOID[" + i + "]");
+                q.RequiredCreatureOrGOCount[i] = packet.ReadInt32("RequiredCreatureOrGOCount[" + i + "]");
+                q.ItemDropIntermediateID[i] = packet.ReadInt32("ItemDropIntermediateID[" + i + "]");
+                q.ItemDropIntermediateCount[i] = packet.ReadInt32("ItemDropIntermediateCount[" + i + "]");
             }
             for (int i = 0; i < 6; i++)
             {
-                packet.ReadInt32("RequiredItemID[" + i + "]");
-                packet.ReadInt32("RequiredItemCount[" + i + "]");
+                q.RequiredItemID[i] = packet.ReadInt32("RequiredItemID[" + i + "]");
+                q.RequiredItemCount[i] = packet.ReadInt32("RequiredItemCount[" + i + "]");
             }
-            packet.ReadInt32("CriteriaSpellID");
+            q.CriteriaSpellID = packet.ReadInt32("CriteriaSpellID");
             for (int i = 0; i < 4; i++)
-                packet.ReadCString("ObjectiveTexts[" + i + "]");
-            for (int i = 0; i < 4; i++)
-            {
-                packet.ReadInt32("RewardCurrencyID[" + i + "]");
-                packet.ReadInt32("RewardCurrencyValue[" + i + "]");
-            }
+                q.ObjectiveTexts[i] = packet.ReadCString("ObjectiveTexts[" + i + "]");
             for (int i = 0; i < 4; i++)
             {
-                packet.ReadInt32("RequiredCurrencyID[" + i + "]");
-                packet.ReadInt32("RequiredCurrencyValue[" + i + "]");
+                q.RewardCurrencyID[i] = packet.ReadInt32("RewardCurrencyID[" + i + "]");
+                q.RewardCurrencyValue[i] = packet.ReadInt32("RewardCurrencyValue[" + i + "]");
             }
-            packet.ReadCString("QuestGiverPortraitText");
-            packet.ReadCString("QuestGiverPortraitUnk");
-            packet.ReadCString("QuestTurnInPortraitText");
-            packet.ReadCString("QuestTurnInPortrainUnk");
-            packet.ReadInt32("Sound field 1");
-            packet.ReadInt32("Sound field 2");
+            for (int i = 0; i < 4; i++)
+            {
+                q.RequiredCurrencyID[i] = packet.ReadInt32("RequiredCurrencyID[" + i + "]");
+                q.RequiredCurrencyValue[i] = packet.ReadInt32("RequiredCurrencyValue[" + i + "]");
+            }
+            q.QuestGiverPortraitText = packet.ReadCString("QuestGiverPortraitText");
+            q.QuestGiverPortraitUnk = packet.ReadCString("QuestGiverPortraitUnk");
+            q.QuestTurnInPortraitText = packet.ReadCString("QuestTurnInPortraitText");
+            q.QuestTurnInPortraitUnk = packet.ReadCString("QuestTurnInPortrainUnk");
+            q.SoundField1 = packet.ReadInt32("Sound field 1");
+            q.SoundField2 = packet.ReadInt32("Sound field 2");
+            QuestStorage.GetSingleton().Add(q);
         }
 
         [ClientToServerParser(Opcode.CMSG_QUEST_QUERY)]

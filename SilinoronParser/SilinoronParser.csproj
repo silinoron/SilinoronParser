@@ -98,6 +98,15 @@
     <Compile Include="Parsing\SpecialParserAttribute.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQLOutput\Creature.cs" />
+    <Compile Include="SQLOutput\CreatureStorage.cs" />
+    <Compile Include="SQLOutput\DataClasses.cs" />
+    <Compile Include="SQLOutput\GameObject.cs" />
+    <Compile Include="SQLOutput\GameObjectStorage.cs" />
+    <Compile Include="SQLOutput\Quest.cs" />
+    <Compile Include="SQLOutput\QuestStorage.cs" />
+    <Compile Include="SQLOutput\SpawnStorage.cs" />
+    <Compile Include="SQLOutput\SQLStorage.cs" />
     <Compile Include="Util\CharacterInfo.cs" />
     <Compile Include="Util\CommandLine.cs" />
     <Compile Include="Util\Extensions.cs" />
