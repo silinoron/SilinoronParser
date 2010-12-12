@@ -25,8 +25,8 @@ namespace SilinoronParser.SQLOutput
         {
             string sql = "";
             for (int i = 0; i < DATA_SIZE - 1; i++)
-                sql += "\"" + data[i] + "\", ";
-            sql += "\"" + data[DATA_SIZE - 1] + "\"";
+                sql += "\"" + data[i].ToSQL() + "\", ";
+            sql += "\"" + data[DATA_SIZE - 1].ToSQL() + "\"";
             return sql;
         }
     }

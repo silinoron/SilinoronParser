@@ -35,8 +35,8 @@ namespace SilinoronParser.SQLOutput
             string sql = "REPLACE INTO creaturecache VALUES (";
             sql += Entry + ", ";
             sql += Name.ToSQL() + ", ";
-            sql += "\"" + SubName + "\",";
-            sql += "\"" + IconName + "\",";
+            sql += "\"" + SubName.ToSQL() + "\",";
+            sql += "\"" + IconName.ToSQL() + "\",";
             sql += (int)TypeFlags + ", ";
             sql += (int)Type + ", ";
             sql += (int)Family + ", ";

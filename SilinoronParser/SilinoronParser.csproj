@@ -101,6 +101,7 @@
     <Compile Include="SQLOutput\Creature.cs" />
     <Compile Include="SQLOutput\CreatureStorage.cs" />
     <Compile Include="SQLOutput\DataClasses.cs" />
+    <Compile Include="SQLOutput\Extensions.cs" />
     <Compile Include="SQLOutput\GameObject.cs" />
     <Compile Include="SQLOutput\GameObjectStorage.cs" />
     <Compile Include="SQLOutput\Quest.cs" />
