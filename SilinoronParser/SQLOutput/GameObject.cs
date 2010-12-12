@@ -32,9 +32,9 @@ namespace SilinoronParser.SQLOutput
             sql += (int)Type + ", ";
             sql += DisplayID + ", ";
             sql += Name.ToSQL() + ", ";
-            sql += "\"" + IconName.ToSQL() + "\",";
-            sql += "\"" + CastCaption.ToSQL() + "\",";
-            sql += "\"" + UnkString.ToSQL() + "\",";
+            sql += "'" + IconName.ToSQL() + "',";
+            sql += "'" + CastCaption.ToSQL() + "',";
+            sql += "'" + UnkString.ToSQL() + "',";
             sql += Data.ToSQL() + ", ";
             sql += Size + ", ";
             sql += QuestItems.ToSQL() + ", ";

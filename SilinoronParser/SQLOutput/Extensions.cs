@@ -7,9 +7,12 @@ namespace SilinoronParser.SQLOutput
     {
         public static string ToSQL(this string input)
         {
-            //var data = Regex.Replace(input, @"'", @"\'");
-            var data = Regex.Replace(input, "\"", "\\\"");
-            return data;
+            var str = input.Replace("\\", "\\\\");
+            str = str.Replace("'", "\\'");
+            str = str.Replace("\"", "\\\"");
+            str = str.Replace("\r", "\\r");
+            str = str.Replace("\n", "\\n");
+            return str;
         }
     }
 }
