@@ -84,6 +84,7 @@ namespace SilinoronParser
                 QuestStorage.GetSingleton().Output(Path.Combine(fullPath, file + "_questcache.sql"));
                 CreatureStorage.GetSingleton().Output(Path.Combine(fullPath, file + "_creaturecache.sql"));
                 GameObjectStorage.GetSingleton().Output(Path.Combine(fullPath, file + "_gameobjectcache.sql"));
+                CreatureTemplateUpdateStorage.GetSingleton().Output(Path.Combine(fullPath, file + "_creaturecacheupdates.sql"));
                 CreatureSpawnStorage css = CreatureSpawnStorage.GetSingleton();
                 GameObjectSpawnStorage gss = GameObjectSpawnStorage.GetSingleton();
                 Dictionary<int, Dictionary<Guid, WowObject>> dict = ObjectHandler.Objects;

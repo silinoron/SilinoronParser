@@ -100,6 +100,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLOutput\Creature.cs" />
     <Compile Include="SQLOutput\CreatureStorage.cs" />
+    <Compile Include="SQLOutput\CreatureUpdateStorage.cs" />
     <Compile Include="SQLOutput\DataClasses.cs" />
     <Compile Include="SQLOutput\Extensions.cs" />
     <Compile Include="SQLOutput\GameObject.cs" />

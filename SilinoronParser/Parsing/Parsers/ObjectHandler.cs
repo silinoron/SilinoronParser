@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SilinoronParser.Util;
 using SilinoronParser.Enums;
 using Guid = SilinoronParser.Util.Guid;
+using SilinoronParser.SQLOutput;
 
 namespace SilinoronParser.Parsing.Parsers
 {
@@ -26,7 +27,6 @@ namespace SilinoronParser.Parsing.Parsers
                 Console.WriteLine("firstType: " + unkByte);
                 var guidCount = packet.ReadInt32("GUID Count");
                 if (guidCount > 0) {
-                    // stuff needs doing
                     for (uint i = 0; i < guidCount; i++)
                         packet.ReadPackedGuid("GUID " + (i + 1));
                 }
@@ -94,6 +94,7 @@ namespace SilinoronParser.Parsing.Parsers
             if (!Objects.ContainsKey(map))
                 Objects.Add(map, new Dictionary<Guid, WowObject>());
             Objects[map].Add(guid, obj);
+            HandleUpdateFieldChangedValues(true, guid, objType, updates, moves);
         }
 
         public static Dictionary<int, UpdateField> ReadValuesUpdateBlock(Packet packet)
@@ -138,6 +139,9 @@ namespace SilinoronParser.Parsing.Parsers
 
                 foreach (var upVal in updates)
                 {
+                    bool shouldOverride = false;
+                    int overrideVal = -1;
+                    bool isTemplate = false;
                     shouldCommit = true;
                     isIntValue = true;
                     flags = false;
@@ -205,7 +209,8 @@ namespace SilinoronParser.Parsing.Parsers
                             }
                         case UnitField.UNIT_FIELD_FACTIONTEMPLATE:
                             {
-                                fieldName = "faction_A = " + val.Int32Value + ", faction_H";
+                                isTemplate = true;
+                                fieldName = "faction_A=" + val.Int32Value + ", faction_H";
                                 break;
                             }
                         case UnitField.UNIT_FIELD_BASE_HEALTH:
@@ -218,6 +223,15 @@ namespace SilinoronParser.Parsing.Parsers
                                 fieldName = "minmana = " + val.Int32Value + ", maxmana";
                                 break;
                             }
+                        case UnitField.UNIT_FIELD_BYTES_0:
+                            {
+                                // unit class is the second byte (little-endian?)
+                                fieldName = "unitclass";
+                                overrideVal = ((val.Int32Value & 0x00FF0000) >> 16);
+                                isTemplate = true;
+                                shouldOverride = true;
+                                break;
+                            }
                         default:
                             {
                                 shouldCommit = false;
@@ -228,10 +242,20 @@ namespace SilinoronParser.Parsing.Parsers
                     if (!shouldCommit)
                         continue;
 
-                    var finalValue = isIntValue ? (object)val.Int32Value : val.SingleValue;
+                    var finalValue = shouldOverride ? (object) overrideVal : (isIntValue ? val.Int32Value : val.SingleValue);
 
                     if (flags)
                         finalValue = "0x" + ((int)finalValue).ToString("X8");
+
+                    if (isTemplate)
+                    {
+                        CreatureTemplateUpdate update = new CreatureTemplateUpdate(guid.GetEntry(), fieldName + "=" + finalValue);
+                        CreatureTemplateUpdateStorage.GetSingleton().Add(update);
+                    }
+                    else
+                    {
+
+                    }
                 }
             }
 
