@@ -5,17 +5,47 @@ namespace SilinoronParser.SQLOutput
 {
     public sealed class CreatureTemplateUpdate
     {
-        public string Update { get; private set; }
         public uint Entry { get; private set; }
-        public CreatureTemplateUpdate(uint entry, string update)
+        private readonly Dictionary<string, string> updates = new Dictionary<string, string>();
+        public CreatureTemplateUpdate(uint entry, Dictionary<string, string> updatesIn)
         {
             Entry = entry;
-            Update = update;
+            foreach (var update in updatesIn)
+                updates.Add(update.Key, update.Value);
+        }
+
+        public Dictionary<string, string>.Enumerator GetUpdates()
+        {
+            return updates.GetEnumerator();
+        }
+
+        public CreatureTemplateUpdate(uint entry, string fieldName, string value)
+        {
+            Entry = entry;
+            updates.Add(fieldName, value);
+        }
+
+        public bool HasUpdateForField(string field)
+        {
+            return updates.ContainsKey(field);
+        }
+
+        public void AddUpdate(string field, string value)
+        {
+            if (updates.ContainsKey(field))
+                updates[field] = value;
+            else
+                updates.Add(field, value);
         }
 
         public string ToSQL()
         {
-            return "UPDATE creature_template SET " + Update + " WHERE entry=" + Entry + ";";
+            string sql = "UPDATE creature_template SET ";
+            foreach (var update in updates)
+                sql += update.Key + "=" + update.Value + ", ";
+            sql = sql.Substring(0, sql.Length - 2);
+            sql += " WHERE entry=" + Entry + ";";
+            return sql;
         }
     }
 
@@ -29,12 +59,12 @@ namespace SilinoronParser.SQLOutput
         {
             if (updates.ContainsKey(entry.Entry))
             {
-                CreatureTemplateUpdate oldEntry = updates[entry.Entry];
-                if (oldEntry.Update.Contains(entry.Update))
-                    return;
-                string newVal = entry.Update + ", " + oldEntry.Update;
-                CreatureTemplateUpdate newUpdate = new CreatureTemplateUpdate(entry.Entry, newVal);
-                updates[entry.Entry] = newUpdate;
+                for (Dictionary<string, string>.Enumerator e = entry.GetUpdates(); e.MoveNext(); )
+                {
+                    string fieldName = e.Current.Key;
+                    string value = e.Current.Value;
+                    updates[entry.Entry].AddUpdate(fieldName, value);
+                }
             }
             else
                 updates.Add(entry.Entry, entry);

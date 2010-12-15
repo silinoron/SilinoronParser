@@ -11,6 +11,8 @@ namespace SilinoronParser.Parsing.Parsers
     public static class ObjectHandler
     {
         public static readonly Dictionary<int, Dictionary<Guid, WowObject>> Objects = new Dictionary<int, Dictionary<Guid, WowObject>>();
+        private static readonly Dictionary<uint, int> minLevels = new Dictionary<uint, int>();
+        private static readonly Dictionary<uint, int> maxLevels = new Dictionary<uint, int>();
 
         [Parser(Index.HandleUpdateObjectIndex)]
         public static void HandleUpdateObject(Packet packet)
@@ -141,6 +143,8 @@ namespace SilinoronParser.Parsing.Parsers
                 {
                     bool shouldOverride = false;
                     int overrideVal = -1;
+                    Dictionary<string, string> overrideDict = new Dictionary<string, string>();
+                    bool shouldOverrideDict = false;
                     bool isTemplate = false;
                     shouldCommit = true;
                     isIntValue = true;
@@ -194,7 +198,33 @@ namespace SilinoronParser.Parsing.Parsers
                             }
                         case UnitField.UNIT_FIELD_LEVEL:
                             {
-                                fieldName = "minlevel = " + val.Int32Value + ", maxlevel";
+                                int lvl = val.Int32Value;
+                                uint entry = guid.GetEntry();
+                                bool addMin = true;
+                                bool addMax = true;
+                                isTemplate = true;
+                                if (minLevels.ContainsKey(entry))
+                                    if (lvl >= minLevels[entry])
+                                        addMin = false;
+                                if (maxLevels.ContainsKey(entry))
+                                    if (lvl <= maxLevels[entry])
+                                        addMax = false;
+
+                                if (addMin)
+                                {
+                                    overrideDict.Add("minlevel", lvl.ToString());
+                                    minLevels[entry] = lvl;
+                                }
+                                if (addMax)
+                                {
+                                    overrideDict.Add("maxlevel", lvl.ToString());
+                                    maxLevels[entry] = lvl;
+                                }
+                                
+                                if (!addMin && !addMax)
+                                    shouldCommit = false;
+
+                                shouldOverrideDict = true;
                                 break;
                             }
                         case UnitField.UNIT_FIELD_RANGED_ATTACK_POWER:
@@ -244,12 +274,19 @@ namespace SilinoronParser.Parsing.Parsers
 
                     var finalValue = shouldOverride ? (object) overrideVal : (isIntValue ? val.Int32Value : val.SingleValue);
 
-                    if (flags)
+                    if (flags && finalValue is int)
                         finalValue = "0x" + ((int)finalValue).ToString("X8");
 
                     if (isTemplate)
                     {
-                        CreatureTemplateUpdate update = new CreatureTemplateUpdate(guid.GetEntry(), fieldName + "=" + finalValue);
+                        Dictionary<string, string> data;
+                        if (shouldOverrideDict)
+                            data = overrideDict;
+                        else {
+                            data = new Dictionary<string, string>();
+                            data.Add(fieldName, finalValue.ToString());
+                        }
+                        CreatureTemplateUpdate update = new CreatureTemplateUpdate(guid.GetEntry(), data);
                         CreatureTemplateUpdateStorage.GetSingleton().Add(update);
                     }
                     else
