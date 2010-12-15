@@ -111,6 +111,7 @@
     <Compile Include="SQLOutput\SQLStorage.cs" />
     <Compile Include="Util\CharacterInfo.cs" />
     <Compile Include="Util\CommandLine.cs" />
+    <Compile Include="Util\DamageStatistics.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="Util\Guid.cs" />
     <Compile Include="Util\MovementInfo.cs" />
