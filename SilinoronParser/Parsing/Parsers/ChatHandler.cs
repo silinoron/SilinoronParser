@@ -62,12 +62,6 @@ namespace SilinoronParser.Parsing.Parsers
                         packet.ReadCString("Name");
                         var target = packet.ReadGuid("Receiver GUID");
 
-                        if (target.Full != 0)
-                        {
-                            packet.ReadInt32("Receiver Name Length");
-                            packet.ReadCString("Receiver Name");
-                        }
-
                         break;
                     }
             }
