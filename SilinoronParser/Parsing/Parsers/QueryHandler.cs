@@ -108,7 +108,7 @@ namespace SilinoronParser.Parsing.Parsers
                 c.QuestItems[i] = packet.ReadInt32("Quest Item " + i);
 
             c.MovementID = packet.ReadInt32("Movement ID");
-            c.Unk = packet.ReadInt32("Unk");
+            c.Exp = packet.ReadInt32("Expansion ID");
             CreatureStorage.GetSingleton().Add(c);
         }
 
@@ -142,7 +142,7 @@ namespace SilinoronParser.Parsing.Parsers
             for (var i = 0; i < 6; i++)
                 go.QuestItems[i] = packet.ReadInt32("Quest Item " + i);
 
-            go.Unk = packet.ReadInt32("Unk");
+            go.Exp = packet.ReadInt32("Expansion ID");
             GameObjectStorage.GetSingleton().Add(go);
         }
 

@@ -28,7 +28,7 @@ namespace SilinoronParser.SQLOutput
         public bool RacialLeader { get; set; }
         public SixInts QuestItems { get; private set; }
         public int MovementID { get; set; }
-        public int Unk { get; set; }
+        public int Exp { get; set; }
 
         public string ToSQL()
         {
@@ -49,7 +49,7 @@ namespace SilinoronParser.SQLOutput
             sql += (RacialLeader ? 1 : 0) + ", ";
             sql += QuestItems.ToSQL() + ", ";
             sql += MovementID + ", ";
-            sql += Unk + ");";
+            sql += Exp + ");";
             return sql;
         }
     }

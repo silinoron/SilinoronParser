@@ -23,7 +23,7 @@ namespace SilinoronParser.SQLOutput
         public TwentyFourInts Data { get; private set; }
         public float Size { get; set; }
         public SixInts QuestItems { get; private set; }
-        public int Unk { get; set; }
+        public int Exp { get; set; }
 
         public string ToSQL()
         {
@@ -38,7 +38,7 @@ namespace SilinoronParser.SQLOutput
             sql += Data.ToSQL() + ", ";
             sql += Size + ", ";
             sql += QuestItems.ToSQL() + ", ";
-            sql += Unk + ");";
+            sql += Exp + ");";
             return sql;
         }
     }
