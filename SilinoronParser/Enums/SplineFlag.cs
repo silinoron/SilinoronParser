@@ -6,7 +6,7 @@ using System.Text;
 namespace SilinoronParser.Enums
 {
     [Flags]
-    public enum SplineFlag
+    public enum SplineFlag : int
     {
         None = 0x00000000,
         Forward = 0x00000001,

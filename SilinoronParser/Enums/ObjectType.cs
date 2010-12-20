@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SilinoronParser.Enums
 {
-    public enum ObjectType
+    public enum ObjectType : byte
     {
         Object = 0,
         Item = 1,

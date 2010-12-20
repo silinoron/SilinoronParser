@@ -6,7 +6,7 @@ using System.Text;
 namespace SilinoronParser.Enums
 {
     [Flags]
-    enum UpdateFlag
+    enum UpdateFlag : short
     {
         None = 0x000,
         Self = 0x001,

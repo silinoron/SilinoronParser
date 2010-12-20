@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SilinoronParser.Enums
 {
-    public enum ChatMessageType : uint
+    public enum ChatMessageType : byte
     {
         System = 0,
         Say = 1,
@@ -59,6 +59,6 @@ namespace SilinoronParser.Enums
         GuildAchievement = 49,
         ArenaPoints = 50,
         PartyLeader = 51,
-        Addon = uint.MaxValue
+        Addon = byte.MaxValue
     }
 }

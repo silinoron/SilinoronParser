@@ -6,7 +6,7 @@ using System.Text;
 namespace SilinoronParser.Enums
 {
     [Flags]
-    public enum ChatTag
+    public enum ChatTag : byte
     {
         None = 0x0,
         Afk = 0x1,

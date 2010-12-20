@@ -17,19 +17,16 @@ namespace SilinoronParser.Parsing.Parsers
         {
             var info = new MovementInfo();
 
-            var moveFlags = (MoveFlag)packet.ReadInt32();
-            Console.WriteLine("Movement Flags: " + moveFlags);
-            info.Flags = moveFlags;
+            info.Flags = packet.ReadEnum<MoveFlag>("Movement Flags");
 
-            var flags2 = (MoveFlagExtra)packet.ReadInt16();
-            Console.WriteLine("Extra Movement Flags: " + flags2);
+            var flags2 = packet.ReadEnum<MoveFlagExtra>("Extra Movement Flags");
 
             packet.ReadInt32("Time");
             var pos = packet.ReadVector4("Position");
             info.Position = new Vector3(pos.X, pos.Y, pos.Z);
             info.Orientation = pos.O;
 
-            if (moveFlags.HasFlag(MoveFlag.OnTransport))
+            if (info.Flags.HasFlag(MoveFlag.OnTransport))
             {
                 packet.ReadPackedGuid("Transport GUID");
                 packet.ReadVector4("Transport Position");
@@ -40,13 +37,13 @@ namespace SilinoronParser.Parsing.Parsers
                     packet.ReadInt32("Transport Time 2");
             }
 
-            if (moveFlags.HasAnyFlag(MoveFlag.Swimming | MoveFlag.Flying) ||
+            if (info.Flags.HasAnyFlag(MoveFlag.Swimming | MoveFlag.Flying) ||
                 flags2.HasFlag(MoveFlagExtra.AlwaysAllowPitching))
                 packet.ReadSingle("Swim Pitch");
 
             packet.ReadInt32("Fall Time");
 
-            if (moveFlags.HasFlag(MoveFlag.Falling))
+            if (info.Flags.HasFlag(MoveFlag.Falling))
             {
                 packet.ReadSingle("Jump Velocity");
                 packet.ReadSingle("Jump Sin");
@@ -54,7 +51,7 @@ namespace SilinoronParser.Parsing.Parsers
                 packet.ReadSingle("Jump XY Speed");
             }
 
-            if (moveFlags.HasFlag(MoveFlag.SplineElevation))
+            if (info.Flags.HasFlag(MoveFlag.SplineElevation))
                 packet.ReadSingle("Spline Elevation");
 
             return info;
@@ -88,8 +85,7 @@ namespace SilinoronParser.Parsing.Parsers
             var pos = packet.ReadVector3("Position");
             packet.ReadInt32("Move Ticks");
 
-            var type = (SplineType)packet.ReadByte();
-            Console.WriteLine("Spline Type: " + type);
+            var type = packet.ReadEnum<SplineType>("Spline Type");
 
             switch (type)
             {
@@ -114,13 +110,10 @@ namespace SilinoronParser.Parsing.Parsers
                     }
             }
 
-            var flags = (SplineFlag)packet.ReadInt32();
-            Console.WriteLine("Spline Flags: " + flags);
+            var flags = packet.ReadEnum<SplineFlag>("Spline Flags");
 
             if (flags.HasFlag(SplineFlag.Unknown3)) {
-                var unkByte3 = (MoveAnimationState)packet.ReadByte();
-                Console.WriteLine("Animation State: " + unkByte3);
-
+                packet.ReadEnum<MoveAnimationState>("Animation State");
                 packet.ReadInt32("Unk Int32 1");
             }
 

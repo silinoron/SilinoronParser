@@ -36,8 +36,7 @@ namespace SilinoronParser.Parsing.Parsers
 
             for (var i = 0; i < (count - ((unkByte == 3) ? 1 : 0)); i++)
             {
-                var type = (UpdateType)packet.ReadByte();
-                Console.WriteLine("Update Type #" + (i + 1) + ": " + type);
+                var type = packet.ReadEnum<UpdateType>("Update Type #" + (i + 1));
 
                 switch (type)
                 {
@@ -54,10 +53,7 @@ namespace SilinoronParser.Parsing.Parsers
                     case UpdateType.Movement:
                         {
                             var guid = packet.ReadPackedGuid("GUID");
-
-                            var objectType = (ObjectType)packet.ReadByte();
-                            Console.WriteLine("Object type: " + objectType);
-
+                            packet.ReadEnum<ObjectType>("Object type");
                             ReadMovementUpdateBlock(packet, guid);
                             ReadValuesUpdateBlock(packet);
                             break;
@@ -84,9 +80,7 @@ namespace SilinoronParser.Parsing.Parsers
 
         public static void ReadCreateObjectBlock(Packet packet, Guid guid, short map)
         {
-            var objType = (ObjectType)packet.ReadByte();
-            Console.WriteLine("Object Type: " + objType);
-
+            var objType = packet.ReadEnum<ObjectType>("Object Type");
             var moves = ReadMovementUpdateBlock(packet, guid);
             var updates = ReadValuesUpdateBlock(packet);
 
@@ -255,7 +249,6 @@ namespace SilinoronParser.Parsing.Parsers
                             }
                         case UnitField.UNIT_FIELD_BYTES_0:
                             {
-                                // unit class is the second byte (little-endian?)
                                 fieldName = "unitclass";
                                 overrideVal = ((val.Int32Value & 0x00FF0000) >> 16);
                                 isTemplate = true;
@@ -355,8 +348,7 @@ namespace SilinoronParser.Parsing.Parsers
         {
             var moveInfo = new MovementInfo();
 
-            var flags = (UpdateFlag)packet.ReadInt16();
-            Console.WriteLine("Update Flags: " + flags);
+            var flags = packet.ReadEnum<UpdateFlag>("Update Flags");
 
             if (flags.HasFlag(UpdateFlag.Living))
             {
@@ -386,8 +378,7 @@ namespace SilinoronParser.Parsing.Parsers
 
                 if (moveFlags.HasFlag(MoveFlag.SplineEnabled))
                 {
-                    var splineFlags = (SplineFlag)packet.ReadInt32();
-                    Console.WriteLine("Spline Flags: " + splineFlags);
+                    var splineFlags = packet.ReadEnum<SplineFlag>("Spline Flags");
 
                     if (splineFlags.HasFlag(SplineFlag.FinalPoint))
                         packet.ReadVector3("Final Spline Coords");
@@ -410,9 +401,7 @@ namespace SilinoronParser.Parsing.Parsers
                     for (var i = 0; i < splineCount; i++)
                         packet.ReadVector3("Spline Waypoint " + i);
 
-                    var mode = (SplineMode)packet.ReadByte();
-                    Console.WriteLine("Spline Mode: " + mode);
-
+                    packet.ReadEnum<SplineMode>("Spline Mode");
                     packet.ReadVector3("Spline Endpoint");
                 }
             }

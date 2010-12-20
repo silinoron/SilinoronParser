@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SilinoronParser.Enums
 {
-    public enum SplineMode
+    public enum SplineMode : byte
     {
         Linear = 0,
         CatmullRom = 1

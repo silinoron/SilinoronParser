@@ -6,7 +6,7 @@ using System.Text;
 namespace SilinoronParser.Enums
 {
     [Flags]
-    public enum MoveFlagExtra
+    public enum MoveFlagExtra : short
     {
         None = 0x0000,
         Unknown1 = 0x0001,

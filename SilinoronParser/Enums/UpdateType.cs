@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SilinoronParser.Enums
 {
-    public enum UpdateType
+    public enum UpdateType : byte
     {
         Values = 0,
         Movement = 1,

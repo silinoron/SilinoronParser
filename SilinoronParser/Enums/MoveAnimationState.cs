@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SilinoronParser.Enums
 {
-    public enum MoveAnimationState
+    public enum MoveAnimationState : byte
     {
         OnGround = 0,
         Swimming = 1,

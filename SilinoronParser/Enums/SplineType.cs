@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SilinoronParser.Enums
 {
-    public enum SplineType
+    public enum SplineType : byte
     {
         Normal = 0,
         Stop = 1,

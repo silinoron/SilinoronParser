@@ -9,12 +9,8 @@ namespace SilinoronParser.Parsing.Parsers
         [Parser(Index.HandleMessageChatIndex)]
         public static void HandleMessageChat(Packet packet)
         {
-            var type = (ChatMessageType)packet.ReadByte();
-            Console.WriteLine("Type: " + type);
-
-            var lang = (Language)packet.ReadInt32();
-            Console.WriteLine("Language: " + lang);
-
+            var type = packet.ReadEnum<ChatMessageType>("Type");
+            packet.ReadEnum<Language>("Language");
             packet.ReadGuid("GUID");
             packet.ReadInt32("Unk Int32");
 
@@ -68,9 +64,7 @@ namespace SilinoronParser.Parsing.Parsers
 
             packet.ReadInt32("Text Length");
             packet.ReadCString("Text");
-
-            var chatTag = (ChatTag)packet.ReadByte();
-            Console.WriteLine("Chat Tag: " + chatTag);
+            packet.ReadEnum<ChatTag>("Chat Tag");
 
             if (type != ChatMessageType.Achievement && type != ChatMessageType.GuildAchievement)
                 return;
