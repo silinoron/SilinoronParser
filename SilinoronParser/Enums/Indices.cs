@@ -23,6 +23,8 @@ namespace SilinoronParser.Enums
         HandlePlayedTimeIndex = 532,
         HandleNotificationIndex = 806,
         HandleHeartbeatIndex = 188,
+        HandleSetPitchIndex = 108,
+        HandleSetFacingIndex = 1061,
         HandleGuildInfoIndex = 975,
         HandleQuestQueryResponseIndex = 935,
     }
@@ -43,5 +45,7 @@ namespace SilinoronParser.Enums
         MSG_MOVE_HEARTBEAT = 0x177C,
         CMSG_QUEST_QUERY = 0xFF7D,
         SMSG_QUEST_QUERY_RESPONSE = 0x765F,
+        MSG_MOVE_SET_PITCH = 0x0E7C,
+        MSG_MOVE_SET_FACING = 0x865D,
     }
 }

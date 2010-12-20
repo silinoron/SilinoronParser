@@ -81,13 +81,14 @@ namespace SilinoronParser.Parsing
             return true;
         }
 
-        public static void InitializeLogFile(string file, string nodump, string nohex)
+        public static void InitializeLogFile(string file, string nodump, string nohex, string skiplarge)
         {
             _noDump = nodump.Equals(bool.TrueString, StringComparison.InvariantCultureIgnoreCase);
             if (_noDump)
                 return;
 
             _noHex = nohex.Equals(bool.TrueString, StringComparison.InvariantCultureIgnoreCase);
+            _skipLarge = skiplarge.Equals(bool.TrueString, StringComparison.InvariantCultureIgnoreCase);
 
             File.Delete(file);
             _file = new StreamWriter(file, true);
@@ -97,6 +98,8 @@ namespace SilinoronParser.Parsing
         private static bool _noDump;
 
         private static bool _noHex;
+
+        private static bool _skipLarge;
 
         private static StreamWriter _file;
 
@@ -171,13 +174,18 @@ namespace SilinoronParser.Parsing
             }
             else if (!_noHex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
+                if (!(_skipLarge && length > 10000))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
 
-                Console.WriteLine("{0}: {1} (0x{2}, Special) Length: {3} Time: {4}", (direction == 1) ? "Client->Server" : "Server->Client",
-                    opcode, ((int)opcode).ToString("X4"), length, time);
+                    Console.WriteLine("{0}: {1} (0x{2}, Special) Length: {3} Time: {4}", (direction == 1) ? "Client->Server" : "Server->Client",
+                        opcode, ((int)opcode).ToString("X4"), length, time);
 
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(Utilities.DumpPacketAsHex(packet));
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine(Utilities.DumpPacketAsHex(packet));
+                }
+                else
+                    packet.SetPosition(packet.GetLength());
             }
 
 #if DEBUG
@@ -232,13 +240,18 @@ namespace SilinoronParser.Parsing
             }
             else if (!_noHex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
+                if (!(_skipLarge && length > 10000))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
 
-                Console.WriteLine("{0}: {1} (0x{2}) Length: {3} Time: {4}", (direction == 1) ? "Client->Server" : "Server->Client",
-                    opcode, ((int)opcode).ToString("X4"), length, time);
+                    Console.WriteLine("{0}: {1} (0x{2}) Length: {3} Time: {4}", (direction == 1) ? "Client->Server" : "Server->Client",
+                        opcode, ((int)opcode).ToString("X4"), length, time);
 
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(Utilities.DumpPacketAsHex(packet));
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine(Utilities.DumpPacketAsHex(packet));
+                }
+                else
+                    packet.SetPosition(packet.GetLength());
             }
 
 #if DEBUG
@@ -292,13 +305,18 @@ namespace SilinoronParser.Parsing
             }
             else if (!_noHex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
+                if (!(_skipLarge && length > 10000))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
 
-                Console.WriteLine("Client->Server: {0} ({1} 0x{2}) Length: {3} Time: {4}",
-                    (Opcode)opcode, opcode, ((int)opcode).ToString("X4"), length, time);
+                    Console.WriteLine("Client->Server: {0} ({1} 0x{2}) Length: {3} Time: {4}",
+                        (Opcode)opcode, opcode, ((int)opcode).ToString("X4"), length, time);
 
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(Utilities.DumpPacketAsHex(packet));
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine(Utilities.DumpPacketAsHex(packet));
+                }
+                else
+                    packet.SetPosition(packet.GetLength());
             }
 
 #if DEBUG

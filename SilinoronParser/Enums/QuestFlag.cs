@@ -3,7 +3,7 @@
 namespace SilinoronParser.Enums
 {
     [Flags]
-    public enum QuestFlag
+    public enum QuestFlag : int
     {
         None = 0x00000000,
         StayAlive = 0x00000001,

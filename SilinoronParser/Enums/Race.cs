@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SilinoronParser.Enums
 {
-    public enum Race
+    public enum Race : byte
     {
         Human = 1,
         Orc = 2,

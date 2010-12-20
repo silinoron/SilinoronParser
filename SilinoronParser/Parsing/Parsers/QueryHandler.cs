@@ -43,14 +43,9 @@ namespace SilinoronParser.Parsing.Parsers
             packet.ReadCString("Name");
             packet.ReadCString("Realm Name");
 
-            var race = (Race)packet.ReadByte();
-            Console.WriteLine("Race: " + race);
-
-            var gender = (Gender)packet.ReadByte();
-            Console.WriteLine("Gender: " + gender);
-
-            var cClass = (Class)packet.ReadByte();
-            Console.WriteLine("Class: " + cClass);
+            var race = packet.ReadEnum<Race>("Race");
+            var gender = packet.ReadEnum<Gender>("Gender");
+            var cClass = packet.ReadEnum<Class>("Class");
 
             var decline = packet.ReadBoolean("Name Declined");
 
@@ -78,22 +73,10 @@ namespace SilinoronParser.Parsing.Parsers
             c.SubName = packet.ReadCString("Sub Name");
             c.IconName = packet.ReadCString("Icon Name");
 
-            var typeFlags = (CreatureTypeFlag)packet.ReadInt32();
-            c.TypeFlags = typeFlags;
-            Console.WriteLine("Type Flags: " + typeFlags);
-
-            var type = (CreatureType)packet.ReadInt32();
-            c.Type = type;
-            Console.WriteLine("Type: " + type);
-
-            var family = (CreatureFamily)packet.ReadInt32();
-            c.Family = family;
-            Console.WriteLine("Family: " + family);
-
-            var rank = (CreatureRank)packet.ReadInt32();
-            c.Rank = rank;
-            Console.WriteLine("Rank: " + rank);
-
+            c.TypeFlags = packet.ReadEnum<CreatureTypeFlag>("Type Flags");
+            c.Type = packet.ReadEnum<CreatureType>("Type");
+            c.Family = packet.ReadEnum<CreatureFamily>("Family");
+            c.Rank = packet.ReadEnum<CreatureRank>("Rank");
             c.KillCredit1 = packet.ReadInt32("Kill Credit 1");
             c.KillCredit2 = packet.ReadInt32("Kill Credit 2");
 
@@ -121,10 +104,7 @@ namespace SilinoronParser.Parsing.Parsers
             if (entry.Value)
                 return;
 
-            var type = (GameObjectType)packet.ReadInt32();
-            go.Type = type;
-            Console.WriteLine("Type: " + type);
-
+            go.Type = packet.ReadEnum<GameObjectType>("Type");
             go.DisplayID = packet.ReadInt32("Display ID");
 
             for (var i = 0; i < 4; i++)
@@ -151,9 +131,7 @@ namespace SilinoronParser.Parsing.Parsers
         {
             Quest q = new Quest();
             q.Entry = packet.ReadInt32("Entry");
-            var method = (QuestMethod)packet.ReadInt32();
-            q.Method = method;
-            Console.WriteLine("Method: {0}", method);
+            q.Method = packet.ReadEnum<QuestMethod>("Method");
             q.Level = packet.ReadInt32("Level");
             q.MinLevel = packet.ReadInt32("MinLevel");
             var sort = packet.ReadInt32();
@@ -162,9 +140,7 @@ namespace SilinoronParser.Parsing.Parsers
             else
                 Console.WriteLine("Sort: {0}", (QuestSort)(-sort));
             q.ZoneOrSort = sort;
-            var questType = (QuestType)packet.ReadInt32();
-            q.Type = questType;
-            Console.WriteLine("Type: {0}", questType);
+            q.Type = packet.ReadEnum<QuestType>("Type");
             q.SuggestedPlayers = packet.ReadInt32("SuggestedPlayers");
             q.RepObjectiveFaction1 = packet.ReadInt32("RepObjFaction1");
             q.RepObjectiveValue1 = packet.ReadInt32("RepObjValue1");
@@ -179,9 +155,7 @@ namespace SilinoronParser.Parsing.Parsers
             q.Honor = packet.ReadInt32("Honor");
             q.HonorMultiplier = packet.ReadSingle("Honor (2)");
             q.SourceItemID = packet.ReadInt32("Source Item ID");
-            var questFlags = (QuestFlag)packet.ReadInt32();
-            q.Flags = questFlags;
-            Console.WriteLine("Flags: {0} ({1})", (int)questFlags, questFlags);
+            q.Flags = packet.ReadEnum<QuestFlag>("Flags");
             q.Unk = packet.ReadInt32("Unk");
             q.RewardTitleID = packet.ReadInt32("RewardTitleID");
             q.PlayersSlain = packet.ReadInt32("PlayersSlain");

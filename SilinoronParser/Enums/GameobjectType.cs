@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SilinoronParser.Enums
 {
-    public enum GameObjectType
+    public enum GameObjectType : int
     {
         Door = 0,
         Button = 1,

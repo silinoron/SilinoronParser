@@ -1,6 +1,6 @@
 namespace SilinoronParser.Enums
 {
-    public enum CreatureType
+    public enum CreatureType : int
     {
         Beat = 1,
         Dragonkin = 2,

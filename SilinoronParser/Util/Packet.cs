@@ -323,5 +323,53 @@ namespace SilinoronParser.Util
             Console.WriteLine("{0}: {1}", name, val);
             return val;
         }
+
+        private KeyValuePair<long, T> ReadEnum<T>(TypeCode code)
+        {
+            var type = typeof(T);
+            object value = null;
+            long rawVal = 0;
+
+            if (code == TypeCode.Empty)
+                code = Type.GetTypeCode(type.GetEnumUnderlyingType());
+
+            switch (code)
+            {
+                case TypeCode.SByte:
+                    rawVal = ReadSByte();
+                    break;
+                case TypeCode.Byte:
+                    rawVal = ReadByte();
+                    break;
+                case TypeCode.Int16:
+                    rawVal = ReadInt16();
+                    break;
+                case TypeCode.UInt16:
+                    rawVal = ReadUInt16();
+                    break;
+                case TypeCode.Int32:
+                    rawVal = ReadInt32();
+                    break;
+                case TypeCode.UInt32:
+                    rawVal = ReadUInt32();
+                    break;
+                case TypeCode.Int64:
+                    rawVal = ReadInt64();
+                    break;
+                case TypeCode.UInt64:
+                    rawVal = (long)ReadUInt64();
+                    break;
+            }
+            value = System.Enum.ToObject(type, rawVal);
+
+            return new KeyValuePair<long, T>(rawVal, (T)value);
+        }
+
+        public T ReadEnum<T>(string name, TypeCode code = TypeCode.Empty)
+        {
+            KeyValuePair<long, T> val = ReadEnum<T>(code);   
+            Console.WriteLine("{0}: {1} ({2})", name, val.Value, val.Key);
+            return val.Value;
+        }
     }
 }

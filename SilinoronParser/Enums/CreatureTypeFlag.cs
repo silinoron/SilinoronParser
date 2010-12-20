@@ -3,7 +3,7 @@ using System;
 namespace SilinoronParser.Enums
 {
     [Flags]
-    public enum CreatureTypeFlag
+    public enum CreatureTypeFlag : int
     {
         None = 0x00000000,
         Tameable = 0x00000001,

@@ -1,6 +1,6 @@
 namespace SilinoronParser.Enums
 {
-    public enum CreatureFamily
+    public enum CreatureFamily : int
     {
         Wolf = 1,
         Cat = 2,

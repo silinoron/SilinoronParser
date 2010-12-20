@@ -60,8 +60,13 @@ namespace SilinoronParser.Parsing.Parsers
             return info;
         }
 
+        [ClientToServerParser(Opcode.MSG_MOVE_HEARTBEAT)]
+        [ClientToServerParser(Opcode.MSG_MOVE_SET_PITCH)]
+        [ClientToServerParser(Opcode.MSG_MOVE_SET_FACING)]
         [Parser(Index.HandleHeartbeatIndex)]
-        public static void ParseUnkMovementPacket(Packet packet)
+        [Parser(Index.HandleSetPitchIndex)]
+        [Parser(Index.HandleSetFacingIndex)]
+        public static void ParseMovementPackets(Packet packet)
         {
             var guid = packet.ReadPackedGuid("Guid");
             ReadMovementInfo(packet, guid);

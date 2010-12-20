@@ -9,7 +9,7 @@ namespace SilinoronParser.Util
     {
         public static float MaxDamage(List<float> damageTaken)
         {
-            float largest = -1;
+            float largest = float.MinValue;
             foreach (float f in damageTaken)
                 if (f > largest)
                     largest = f;

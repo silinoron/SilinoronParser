@@ -33,6 +33,7 @@ namespace SilinoronParser
             string nodump;
             string nohex;
             string tosql;
+            string skiplarge;
             bool _toSQL = false;
 
             try
@@ -42,6 +43,7 @@ namespace SilinoronParser
                 nodump = CmdLine.GetValue("-nodump");
                 nohex = CmdLine.GetValue("-nohex");
                 tosql = CmdLine.GetValue("-tosql");
+                skiplarge = CmdLine.GetValue("-skiplarge");
                 if (tosql.Equals(bool.TrueString, StringComparison.InvariantCultureIgnoreCase))
                     _toSQL = true;
             }
@@ -63,7 +65,7 @@ namespace SilinoronParser
                 if (packets.Count() > 0)
                 {
                     var fullPath = Utilities.GetPathFromFullPath(file);
-                    Handler.InitializeLogFile(Path.Combine(fullPath, file + ".txt"), nodump, nohex);
+                    Handler.InitializeLogFile(Path.Combine(fullPath, file + ".txt"), nodump, nohex, skiplarge);
 
                     foreach (var packet in packets)
                         Handler.Parse(packet);

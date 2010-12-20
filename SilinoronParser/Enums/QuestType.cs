@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SilinoronParser.Enums
 {
-    public enum QuestType
+    public enum QuestType : int
     {
         Elite = 1,
         Life = 21,

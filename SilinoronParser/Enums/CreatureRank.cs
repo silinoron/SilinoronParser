@@ -1,6 +1,6 @@
 namespace SilinoronParser.Enums
 {
-    public enum CreatureRank
+    public enum CreatureRank : int
     {
         Normal = 0,
         Elite = 1,

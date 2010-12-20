@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SilinoronParser.Enums
 {
-    public enum Gender
+    public enum Gender : byte
     {
         Male = 0,
         Female = 1,
