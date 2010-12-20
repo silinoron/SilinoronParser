@@ -133,12 +133,13 @@ namespace SilinoronParser
                 Console.WriteLine(error + n);
 
             var usage = "Usage: SilinoronParser -file <input file> -loader <loader type> " +
-                "[-nodump <boolean>] [-nohex <boolean>] [-tosql <boolean>]" + n + n +
+                "[-nodump <boolean>] [-nohex <boolean>] [-tosql <boolean>] [-skiplarge <boolean>]" + n + n +
                 "-file\t\tThe file to read packets from." + n +
-                "-loader\t\tThe loader to use (zor4xx/tiawps/izidor)." + n +
+                "-loader\t\tThe loader to use (zor4xx/tiawps/izidor/synric)." + n +
                 "-nodump\t\tSet to True to disable file logging." + n +
                 "-nohex\t\tSet to True to not print out hex dumps." + n +
-                "-tosql\t\tSet to True to output SQL dumps.";
+                "-tosql\t\tSet to True to output SQL dumps." + n +
+                "-skiplarge\t\tSet to True to avoid printing out LARGE hex dumps.";
 
             Console.WriteLine(usage);
         }
