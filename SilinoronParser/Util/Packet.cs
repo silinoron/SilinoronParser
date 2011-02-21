@@ -233,10 +233,24 @@ namespace SilinoronParser.Util
             return val;
         }
 
+        public byte ReadByte(string name, string prepend, string format)
+        {
+            var val = ReadByte();
+            Console.WriteLine("{0}: {1}{2}", name, prepend, val.ToString(format));
+            return val;
+        }
+
         public short ReadInt16(string name)
         {
             var val = ReadInt16();
             Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public short ReadInt16(string name, string prepend, string format)
+        {
+            var val = ReadInt16();
+            Console.WriteLine("{0}: {1}{2}", name, prepend, val.ToString(format));
             return val;
         }
 
@@ -247,10 +261,24 @@ namespace SilinoronParser.Util
             return val;
         }
 
+        public int ReadInt32(string name, string prepend, string format)
+        {
+            var val = ReadInt32();
+            Console.WriteLine("{0}: {1}{2}", name, prepend, val.ToString(format));
+            return val;
+        }
+
         public long ReadInt64(string name)
         {
             var val = ReadInt64();
             Console.WriteLine("{0}: {1}", name, val);
+            return val;
+        }
+
+        public long ReadInt64(string name, string prepend, string format)
+        {
+            var val = ReadInt64();
+            Console.WriteLine("{0}: {1}{2}", name, prepend, val.ToString(format));
             return val;
         }
 
