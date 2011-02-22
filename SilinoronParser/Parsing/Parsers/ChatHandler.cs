@@ -6,7 +6,7 @@ namespace SilinoronParser.Parsing.Parsers
 {
     public static class ChatHandler
     {
-        [Parser(Index.HandleMessageChatIndex)]
+        [Parser(Opcode.SMSG_MESSAGECHAT)]
         public static void HandleMessageChat(Packet packet)
         {
             var type = packet.ReadEnum<ChatMessageType>("Type");
@@ -72,14 +72,14 @@ namespace SilinoronParser.Parsing.Parsers
             packet.ReadInt32("Achievement ID");
         }
 
-        [Parser(Index.HandleEmoteIndex)]
+        [Parser(Opcode.SMSG_EMOTE)]
         public static void HandleEmote(Packet packet)
         {
             packet.ReadInt32("Emote");
             packet.ReadGuid("GUID");
         }
 
-        [Parser(Index.HandleTextEmoteIndex)]
+        [Parser(Opcode.SMSG_TEXT_EMOTE)]
         public static void HandleTextEmote(Packet packet)
         {
             packet.ReadGuid("GUID");
@@ -89,7 +89,7 @@ namespace SilinoronParser.Parsing.Parsers
             packet.ReadCString("Name");
         }
 
-        [Parser(Index.HandleChannelListIndex)]
+        [Parser(Opcode.SMSG_CHANNEL_LIST)]
         public static void HandleChannelList(Packet packet)
         {
             packet.ReadByte("Channel Type");

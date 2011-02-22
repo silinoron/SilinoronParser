@@ -7,7 +7,7 @@ namespace SilinoronParser.Parsing.Parsers
 {
     public static class QueryHandler
     {
-        [Parser(Index.HandleGuildQueryResponseIndex)]
+        [Parser(Opcode.SMSG_GUILD_QUERY_RESPONSE)]
         public static void HandleGuildQueryResponse(Packet packet)
         {
             packet.ReadInt64("Guild ID");
@@ -30,7 +30,7 @@ namespace SilinoronParser.Parsing.Parsers
             packet.ReadInt32("Unk int from WotLK");
         }
 
-        [Parser(Index.HandleNameQueryResponseIndex)]
+        [Parser(Opcode.SMSG_NAME_QUERY_RESPONSE)]
         public static void HandleNameQueryResponse(Packet packet)
         {
             packet.ReadPackedGuid("GUID");
@@ -56,7 +56,7 @@ namespace SilinoronParser.Parsing.Parsers
                 packet.ReadCString("Declined Name " + i);
         }
 
-        [Parser(Index.HandleCreatureQueryResponseIndex)]
+        [Parser(Opcode.SMSG_CREATURE_QUERY_RESPONSE)]
         public static void HandleCreatureQueryResponse(Packet packet)
         {
             Creature c = new Creature();
@@ -95,7 +95,7 @@ namespace SilinoronParser.Parsing.Parsers
             CreatureStorage.GetSingleton().Add(c);
         }
 
-        [Parser(Index.HandleGameobjectQueryResponseIndex)]
+        [Parser(Opcode.SMSG_GAMEOBJECT_QUERY_RESPONSE)]
         public static void GameobjectQueryResponse(Packet packet)
         {
             GameObject go = new GameObject();
@@ -126,7 +126,7 @@ namespace SilinoronParser.Parsing.Parsers
             GameObjectStorage.GetSingleton().Add(go);
         }
 
-        [Parser(Index.HandleQuestQueryResponseIndex)]
+        [Parser(Opcode.SMSG_QUEST_QUERY_RESPONSE)]
         public static void HandleQuestQueryResponse(Packet packet)
         {
             Quest q = new Quest();
@@ -223,12 +223,6 @@ namespace SilinoronParser.Parsing.Parsers
             q.SoundField1 = packet.ReadInt32("Sound field 1");
             q.SoundField2 = packet.ReadInt32("Sound field 2");
             QuestStorage.GetSingleton().Add(q);
-        }
-
-        [ClientToServerParser(Opcode.CMSG_QUEST_QUERY)]
-        public static void HandleQuestQuery(Packet packet)
-        {
-            packet.ReadInt32("Quest ID");
         }
     }
 }

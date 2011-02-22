@@ -61,7 +61,7 @@
     <Compile Include="Enums\Gender.cs" />
     <Compile Include="Enums\HighGuidMask.cs" />
     <Compile Include="Enums\HighGuidType.cs" />
-    <Compile Include="Enums\Indices.cs" />
+    <Compile Include="Enums\Opcodes.cs" />
     <Compile Include="Enums\Language.cs" />
     <Compile Include="Enums\MoveAnimationState.cs" />
     <Compile Include="Enums\MoveFlag.cs" />
@@ -86,7 +86,6 @@
     <Compile Include="Loading\Loaders\TiawpsLoader.cs" />
     <Compile Include="Loading\Loaders\Zor4xxLoader.cs" />
     <Compile Include="Loading\Reader.cs" />
-    <Compile Include="Parsing\ClientToServerParserAttribute.cs" />
     <Compile Include="Parsing\Handler.cs" />
     <Compile Include="Parsing\ParserAttribute.cs" />
     <Compile Include="Parsing\Parsers\ChatHandler.cs" />

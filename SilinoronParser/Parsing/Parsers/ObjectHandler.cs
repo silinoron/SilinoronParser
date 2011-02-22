@@ -14,7 +14,7 @@ namespace SilinoronParser.Parsing.Parsers
         private static readonly Dictionary<uint, int> minLevels = new Dictionary<uint, int>();
         private static readonly Dictionary<uint, int> maxLevels = new Dictionary<uint, int>();
 
-        [Parser(Index.HandleUpdateObjectIndex)]
+        [Parser(Opcode.SMSG_UPDATE_OBJECT)]
         public static void HandleUpdateObject(Packet packet)
         {
             var map = packet.ReadInt16("Map");
@@ -445,7 +445,7 @@ namespace SilinoronParser.Parsing.Parsers
             return moveInfo;
         }
 
-        [Parser(Index.HandleCompressedUpdateObjectIndex)]
+        [Parser(Opcode.SMSG_COMPRESSED_UPDATE_OBJECT)]
         public static void HandleCompressedUpdateObject(Packet packet)
         {
             var decompCount = packet.ReadInt32();
@@ -456,7 +456,7 @@ namespace SilinoronParser.Parsing.Parsers
             packet.SetPosition(packet.GetLength());
         }
 
-        [Parser(Index.HandleDestroyObjectIndex)]
+        [Parser(Opcode.SMSG_DESTROY_OBJECT)]
         public static void HandleDestroyObject(Packet packet)
         {
             packet.ReadGuid("GUID");

@@ -11,7 +11,7 @@ namespace SilinoronParser.Parsing
             index = i;
         }
 
-        public ParserAttribute(Index i)
+        public ParserAttribute(Opcode i)
         {
             index = (ushort)i;
         }

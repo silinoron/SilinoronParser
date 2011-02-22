@@ -29,7 +29,6 @@ namespace SilinoronParser.Parsing
                         continue;
                     DoAttributes(method, typeof(ParserAttribute), Handlers);
                     DoAttributes(method, typeof(SpecialParserAttribute), SpecialHandlers);
-                    DoAttributes(method, typeof(ClientToServerParserAttribute), ClientToServerHandlers);
                 }
             }
         }
@@ -43,8 +42,6 @@ namespace SilinoronParser.Parsing
                 attrs = (ParserAttribute[])tmp;
             else if (type == typeof(SpecialParserAttribute))
                 attrs = (SpecialParserAttribute[])tmp;
-            else if (type == typeof(ClientToServerParserAttribute))
-                attrs = (ClientToServerParserAttribute[])tmp;
             else
                 return false;
 
@@ -64,14 +61,10 @@ namespace SilinoronParser.Parsing
                 int index;
                 if (type == typeof(ParserAttribute))
                     index = ((ParserAttribute)attr).index;
-                else if (type == typeof(SpecialParserAttribute))
+                else //if (type == typeof(SpecialParserAttribute))
                 {
                     index = ((SpecialParserAttribute)attr).Index;
                     SpecialHandlerNames[index] = ((SpecialParserAttribute)attr).Name;
-                }
-                else // if (type == typeof(ClientToServerParserAttribute))
-                {
-                    index = (int)((ClientToServerParserAttribute)attr).Opcode;
                 }
 
                 var del = (Action<Packet>)Delegate.CreateDelegate(typeof(Action<Packet>), method);
@@ -112,9 +105,6 @@ namespace SilinoronParser.Parsing
         private static readonly Dictionary<int, string> SpecialHandlerNames =
             new Dictionary<int, string>();
 
-        private static readonly Dictionary<int, Action<Packet>> ClientToServerHandlers =
-            new Dictionary<int, Action<Packet>>();
-
         public static void WriteToFile()
         {
             if (_noDump)
@@ -128,23 +118,16 @@ namespace SilinoronParser.Parsing
         public static void Parse(Packet packet)
         {
             var opcode = packet.GetOpcode();
-            if (packet.GetDirection() == 1)
-            {
-                ParseClientToServerPacket(packet);
-            }
+            if ((opcode & 0xB2AD) == 12)
+                ParseSpecialPacket(packet);
             else
-            {
-                if ((opcode & 0xCF07) == 0x800)
-                    ParseSpecialPacket(packet);
-                else
-                    ParseStandardPacket(packet);
-            }
+                ParseStandardPacket(packet);
         }
 
         public static void ParseSpecialPacket(Packet packet)
         {
             var opcode = packet.GetOpcode();
-            var caseNum = (opcode & 0xF8 | (opcode >> 4) & 0x300) >> 3;
+            var caseNum = ((opcode & 2 | ((opcode & 0x10 | ((opcode & 0x40 | ((opcode & 0x100 | ((opcode & 0xC00 | (opcode >> 2) & 0x1000) >> 1)) >> 1)) >> 1)) >> 2)) >> 1);
             var time = packet.GetTime();
             var direction = packet.GetDirection();
             var length = packet.GetLength();
@@ -210,21 +193,20 @@ namespace SilinoronParser.Parsing
         public static void ParseStandardPacket(Packet packet)
         {
             var opcode = packet.GetOpcode();
-            var offset = opcode & 3 | ((opcode & 8 | ((opcode & 0x20 | ((opcode & 0x300 | (opcode >> 1) & 0x7C00) >> 2)) >> 1)) >> 1);
             var time = packet.GetTime();
             var direction = packet.GetDirection();
             var length = packet.GetLength();
             bool handlerFound = false;
 
-            if (Handlers.ContainsKey(offset))
+            if (Handlers.ContainsKey(opcode))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
 
-                Console.WriteLine("{0}: {1} (0x{2}) (Condensed: {3} ({4} / 0x{5})) Length: {6} Time: {7}", (direction == 1) ? "Client->Server" : "Server->Client",
-                    (Opcode)opcode, ((int)opcode).ToString("X4"), (Index)offset, (int)offset, ((int)offset).ToString("X4"), length, time);
+                Console.WriteLine("{0}: {1} (0x{2}) Length: {3} Time: {4}", (direction == 1) ? "Client->Server" : "Server->Client",
+                    (Opcode)opcode, ((int)opcode).ToString("X4"), length, time);
 
                 Console.ForegroundColor = ConsoleColor.White;
-                var handler = Handlers[offset];
+                var handler = Handlers[opcode];
 
                 try
                 {
@@ -246,71 +228,6 @@ namespace SilinoronParser.Parsing
 
                     Console.WriteLine("{0}: {1} (0x{2}) Length: {3} Time: {4}", (direction == 1) ? "Client->Server" : "Server->Client",
                         opcode, ((int)opcode).ToString("X4"), length, time);
-
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine(Utilities.DumpPacketAsHex(packet));
-                }
-                else
-                    packet.SetPosition(packet.GetLength());
-            }
-
-#if DEBUG
-            if (handlerFound && packet.GetPosition() < packet.GetLength())
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-
-                var pos = packet.GetPosition();
-                var len = packet.GetLength();
-                Console.WriteLine("Packet not fully read! Current position is {0}, length is {1}, and diff is {2}.",
-                    pos, len, len - pos);
-
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-#endif
-
-            Console.ResetColor();
-            if (handlerFound || !_noHex)
-                Console.WriteLine();
-        }
-
-        public static void ParseClientToServerPacket(Packet packet)
-        {
-            var opcode = packet.GetOpcode();
-            var time = packet.GetTime();
-            var direction = packet.GetDirection();
-            var length = packet.GetLength();
-            bool handlerFound = false;
-
-            if (ClientToServerHandlers.ContainsKey(opcode))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-
-                Console.WriteLine("Client->Server: {0} (0x{1}) Length: {2} Time: {3}", 
-                    (Opcode)opcode, ((int)opcode).ToString("X4"), length, time);
-
-                Console.ForegroundColor = ConsoleColor.White;
-                var handler = ClientToServerHandlers[opcode];
-
-                try
-                {
-                    handlerFound = true;
-                    handler(packet);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.GetType());
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine(ex.StackTrace);
-                }
-            }
-            else if (!_noHex)
-            {
-                if (!(_skipLarge && length > 10000))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-
-                    Console.WriteLine("Client->Server: {0} ({1} 0x{2}) Length: {3} Time: {4}",
-                        (Opcode)opcode, opcode, ((int)opcode).ToString("X4"), length, time);
 
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine(Utilities.DumpPacketAsHex(packet));
